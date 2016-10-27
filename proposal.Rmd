@@ -5,21 +5,49 @@ date: "October 25, 2016"
 output: pdf_document
 ---
 
-Please write a 2-3 page final project proposal detailing the background and goal of your project. This document will be comprised of two parts.
-
-Details and objectives
-Please write 1-2 pages which describes
+# Reproducible workflows in building an interactive agricultural extension tool
 
 ## Background
+### The FACTS project
 
-What problem are you addressing? Why is there a need for this project?
-Where does your data come from? Do you already have access to it? What do your data look like?
+The field season of 2016 saw the Integrated Cropping systems lab spent much of its time, money and energy collecting a high-resolution, in-season dataset with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa. This data by-itself is valuable, as such complete sets of data are rare. Though, the sweat and tears for us was more than just for the data; we were on a quest to provide **quantitative** answers to questions that farmers commonly ask but are not easily answered:
+
+> What is going to be the yield this year?
+
+> How much nitrogen is in the soil today?
+
+> Do I have enough soil water and nitrogen for the next few days? 
+
+To do this, we used the Agricultural Production System sIMulator (APSIM), a mechanistic cropping systems model widely used in the U.S. and around the world for research and commercial applications in agriculture. We ran the model with historical, short-term (3 days; using the NDFD model) and long term (>90 days; using the CFS model) weather forecasts. Then we use APSIM’s output to provide real-time estimates and forecasts for weather, soil water and nitrogen, crop water and nitrogen uptake, yield predictions, crop staging and heat/frost stresses.
+
+The in-season workflow worked something like this: 1) We set up model calibrations for all experimental sites at the beginning of the season; 2). We then added historical, current, and forecasted weather to drive the model to simulate historical, current, and future field events; 3) We collected ground-truth data (pretty much everything we could) to test our model; and 5) publish the results (simulated and measured data) on our website every 2 weeks.
+
+### Hindcast 
+
+Now that the field season has come to an end, farmers may be asking themselves these kinds of questions:
+
+> What could have I done differently? 
+
+> What if I had used more nitrogen or planted more seeds?
+
+> What if I had gotten more rain?
+
+This is when the model comes in handy. We can basically use the calibrated model to perform a scenario (‘what if’) analysis by making changes in APSIM. For instance, we could change the amount of fertilizer we applied, or the number of seeds planted, or plant our crops in narrower rows, or even add precipitation events. The idea is to evaluate what would have led to a greater yield, less environmental damage, and more profits.
+
+**One challenge** is that the APSIM output data is messy. Data is reported for each system in an individual text file. Values are reported for every single day, but sometimes we are interested in end of season values, or averages, etc. Values are sometimes stored as variable names (e.g. sw15, sw45, for volumetric soil water content at 15 and 45 cm respectively). In short, a lot of data processing and tiding is needed before any meaningful information can be drawn from these. 
+
+**A greater challenge**, however, will be the data flows between collaborators of the research. Dr. Archontoulis (PI of this project), will be in charge of running the simulations. It is to be expected that the structure of the data (the outputs requested from APSIM) may change after the team looks 
+There is a need of desining a flexible and robust workflow ....
 
 ## Objective
 
 What will “success” look like for your project?
 You may need more than one.
 Potentially consider objectives for this class, as well as long term (if necessary)
+
+1)
+2)
+3) Integrated in to a shiny web app to be integrated with the FACT  
 
 ## Approach
 
