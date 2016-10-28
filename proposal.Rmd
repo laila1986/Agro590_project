@@ -5,12 +5,14 @@ date: "October 25, 2016"
 output: pdf_document
 ---
 
-# Reproducible workflows in building an interactive agricultural extension tool
-
+# Reproducible workflow in building an interactive agricultural extension tool
 ## Background
-### The FACTS project
+### Forecast and Assessment of Cropping sysTemS (FACTS): "The FACTS project"
+The field season of 2016 saw the Integrated Cropping systems lab spent much of its time, money and energy collecting a high-resolution, in-season dataset with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa .
 
-The field season of 2016 saw the Integrated Cropping systems lab spent much of its time, money and energy collecting a high-resolution, in-season dataset with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa. This data by-itself is valuable, as such complete sets of data are rare. Though, the sweat and tears for us was more than just for the data; we were on a quest to provide **quantitative** answers to questions that farmers commonly ask but are not easily answered:
+![](images/site.jpg)
+
+This data by-itself is valuable, as such high resolution in-season data is rare. Though, the sweat and tears for us was more than just for the data; we were on a quest to provide **quantitative** answers to questions that farmers commonly ask but are not easy to answer:
 
 > What is going to be the yield this year?
 
@@ -18,9 +20,10 @@ The field season of 2016 saw the Integrated Cropping systems lab spent much of i
 
 > Do I have enough soil water and nitrogen for the next few days? 
 
-To do this, we used the Agricultural Production System sIMulator (APSIM), a mechanistic cropping systems model widely used in the U.S. and around the world for research and commercial applications in agriculture. We ran the model with historical, short-term (3 days; using the NDFD model) and long term (>90 days; using the CFS model) weather forecasts. Then we use APSIM’s output to provide real-time estimates and forecasts for weather, soil water and nitrogen, crop water and nitrogen uptake, yield predictions, crop staging and heat/frost stresses.
+To answer those questions, we used the Agricultural Production System sIMulator (APSIM), a mechanistic cropping systems model widely used in the U.S. and around the world for research and commercial applications in agriculture. We ran the model with historical, short-term (3 days; using the NDFD model) and long term (>90 days; using the CFS model) weather forecasts. Then we use APSIM’s output to provide real-time estimates and forecasts for weather, soil water and nitrogen, crop water and nitrogen uptake, yield predictions, crop staging and heat/frost stresses. 
+The in-season workflow worked something like this: 1) We seted up model calibration for all experimental sites at the beginning of the season; 2) We then added historical, current, and forecasted weather to drive the model to simulate historical, current, and future field events; 3) We collect ground-truth data (pretty much everything we could) to test our model; and 5) finally, we published the results (simulated and measured data) on our website every 2 weeks. The graph below is one example of the Soil Water content simulated by APSIM and in-season data collected at the NW site in Iowa.
 
-The in-season workflow worked something like this: 1) We set up model calibrations for all experimental sites at the beginning of the season; 2). We then added historical, current, and forecasted weather to drive the model to simulate historical, current, and future field events; 3) We collected ground-truth data (pretty much everything we could) to test our model; and 5) publish the results (simulated and measured data) on our website every 2 weeks.
+![](images/data.jpg)
 
 ### Hindcast 
 
@@ -32,12 +35,12 @@ Now that the field season has come to an end, farmers may be asking themselves t
 
 > What if I had gotten more rain?
 
-This is when the model comes in handy. We can basically use the calibrated model to perform a scenario (‘what if’) analysis by making changes in APSIM. For instance, we could change the amount of fertilizer we applied, or the number of seeds planted, or plant our crops in narrower rows, or even add precipitation events. The idea is to evaluate what would have led to a greater yield, less environmental damage, and more profits.
+This is when the model comes in handy. We can basically use the calibrated model to perform a scenario (‘what if’) analysis by making changes in APSIM. For instance, we could change the amount of fertilizer we applied, or the number of seeds planted, or plant our crops in narrower rows, or even add precipitation events. The idea is to evaluate what would have led to a greater yield, less environmental damage, and more profits. This type of analysis also give us the opportunity to evaluate how current management practices and environment performance of cropping systems. 
 
-**One challenge** is that the APSIM output data is messy. Data is reported for each system in an individual text file. Values are reported for every single day, but sometimes we are interested in end of season values, or averages, etc. Values are sometimes stored as variable names (e.g. sw15, sw45, for volumetric soil water content at 15 and 45 cm respectively). In short, a lot of data processing and tiding is needed before any meaningful information can be drawn from these. 
+**One challenge** is that the APSIM output data is messy. Data is reported for each system in an individual text file. Values are reported for every single day, but sometimes we are interested in end of season values, or averages, etc. Values are sometimes stored as variable names (e.g. sw15, sw45, for volumetric soil water content at 15 and 45 cm respectively). This whole picture could get even more messy when trying to simulate scenario analysis that essentially multiply the number of outputs (txt files) by many combinations of management, weather, etc. that we might have. In short, a lot of data processing and tiding is needed before any meaningful information can be drawn from these data. 
 
-**A greater challenge**, however, will be the data flows between collaborators of the research. Dr. Archontoulis (PI of this project), will be in charge of running the simulations. It is to be expected that the structure of the data (the outputs requested from APSIM) may change after the team looks 
-There is a need of desining a flexible and robust workflow ....
+**A greater challenge**, however, will be the data flows between collaborators of the research. Dr. Archontoulis (PI of this project), will be in charge of running the simulations for the scenario analysis. It is to be expected that the structure of the data (the outputs requested from APSIM) may change after the team looks.
+There is a need of designing a flexible and robust workflow environment where data could still being used even when variables-outputs seem to not have the same name anymore. 
 
 ## Objective
 
@@ -45,17 +48,45 @@ What will “success” look like for your project?
 You may need more than one.
 Potentially consider objectives for this class, as well as long term (if necessary)
 
-1)
-2)
-3) Integrated in to a shiny web app to be integrated with the FACT  
+1) Create a database from APSIM outputs in a "tidy" format to facilitate analysis
+2) Set up a flexible data process and analysis workflow of APSIM simulation to allow collaboration and reproducibility of our project team it in the long term. 
+3) Analyse and visualize the model outputs to answer some of the questions targeted through the scenario analysis  
+4) Design a shiny web app to be integrated with the FACTS project to be used as a tool to answer particular question in an interactive way  
 
 ## Approach
 
 What strategies and tools will you use to reach your objective?
-Desired outcome
+
+R software will be the main tool to read, clean, reshape, analyze, and visualize the data coming from APSIM simulations. Particular packages such as Tidyr and ggplot2 will be highly used. 
+
+-Desired outcome
+A  tidy and reproducible database that includes all output variables from APSIM simulations and an interactive shiny web app to visualize data outcomes. 
+
+
 What does the final product look like?
+
+-Data base
+-Set of graphs
 
 ## Timeline
 
 Use an additional page to create a timeline. Use the timeline to describe deliverables that will be held accountable within your group. Consider creating tasks that are easily assignable within the group, with clear deadlines.
+
+
+-Reading APSIM simulation outputs; November 1st
+
+-Data cleaning, munging, and wrangling; November 7th
+
+-Data analysis and visualization, November 21st
+
+-Shyny app; December 1st
+
+-Presentatio; Finals week  
+
+
+
+
+
+
+
 
