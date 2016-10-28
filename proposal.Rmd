@@ -2,15 +2,15 @@
 title: "Project Proposal"
 author: "Laila Puntel and Rafael Martinez-Feria"
 date: "October 25, 2016"
-output: pdf_document
+output: html_document
 ---
 
 # Reproducible workflow in building an interactive agricultural extension tool
 ## Background
-### Forecast and Assessment of Cropping sysTemS (FACTS): "The FACTS project"
-The field season of 2016 saw the Integrated Cropping systems lab spent much of its time, money and energy collecting a high-resolution, in-season dataset with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa .
+### Forecast and Assessment of Cropping sysTemS ([FACTS](http://crops.extension.iastate.edu/facts/) ): "The FACTS project"
+The field season of 2016 saw the [Integrated Cropping systems Lab](http://www.archontoulislab.com/) spent much of its time, money and energy collecting a high-resolution, in-season dataset with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa .
 
-![](images/site.jpg)
+![](images/site.png)
 
 This data by-itself is valuable, as such high resolution in-season data is rare. Though, the sweat and tears for us was more than just for the data; we were on a quest to provide **quantitative** answers to questions that farmers commonly ask but are not easy to answer:
 
@@ -20,12 +20,13 @@ This data by-itself is valuable, as such high resolution in-season data is rare.
 
 > Do I have enough soil water and nitrogen for the next few days? 
 
-To answer those questions, we used the Agricultural Production System sIMulator (APSIM), a mechanistic cropping systems model widely used in the U.S. and around the world for research and commercial applications in agriculture. We ran the model with historical, short-term (3 days; using the NDFD model) and long term (>90 days; using the CFS model) weather forecasts. Then we use APSIM’s output to provide real-time estimates and forecasts for weather, soil water and nitrogen, crop water and nitrogen uptake, yield predictions, crop staging and heat/frost stresses. 
+To answer those questions, we used the [Agricultural Production System sIMulator (APSIM)](www.apsim.info), a mechanistic cropping systems model widely used in the U.S. and around the world for research and commercial applications in agriculture. We ran the model with historical, short-term (3 days; using the [NDFD model](http://www.nws.noaa.gov/ndfd) ) and long-term (>90 days; using the [CFS model](https://en.wikipedia.org/wiki/Climate_Forecast_System) ) weather forecasts. Then we use APSIM’s output to provide real-time estimates and forecasts for weather, soil water and nitrogen, crop water and nitrogen uptake, yield predictions, crop staging and heat/frost stresses.
+
 The in-season workflow worked something like this: 1) We seted up model calibration for all experimental sites at the beginning of the season; 2) We then added historical, current, and forecasted weather to drive the model to simulate historical, current, and future field events; 3) We collect ground-truth data (pretty much everything we could) to test our model; and 5) finally, we published the results (simulated and measured data) on our website every 2 weeks. The graph below is one example of the Soil Water content simulated by APSIM and in-season data collected at the NW site in Iowa.
 
-![](images/data.jpg)
+![](images/data.png)
 
-### Hindcast 
+### Hindcast: What if? 
 
 Now that the field season has come to an end, farmers may be asking themselves these kinds of questions:
 
@@ -48,45 +49,55 @@ What will “success” look like for your project?
 You may need more than one.
 Potentially consider objectives for this class, as well as long term (if necessary)
 
-1) Create a database from APSIM outputs in a "tidy" format to facilitate analysis
-2) Set up a flexible data process and analysis workflow of APSIM simulation to allow collaboration and reproducibility of our project team it in the long term. 
-3) Analyse and visualize the model outputs to answer some of the questions targeted through the scenario analysis  
-4) Design a shiny web app to be integrated with the FACTS project to be used as a tool to answer particular question in an interactive way  
+1. Create a database from APSIM outputs in a "tidy" format to facilitate analysis.
+
+2. Set up a flexible data process and analysis workflow of APSIM simulation to allow collaboration and reproducibility of our project team it in the long term.
+
+3. Analyse and visualize the model outputs to answer some of the questions targeted through the scenario analysis.
+
+4. Design a shiny web app to be integrated with the [FACTS project](http://crops.extension.iastate.edu/facts/) to be used as a tool to answer particular question in an interactive way.
 
 ## Approach
 
-What strategies and tools will you use to reach your objective?
+R software will be the main tool to read, clean, reshape, analyze, and visualize the data coming from APSIM simulations. Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` will be highly used. 
 
-R software will be the main tool to read, clean, reshape, analyze, and visualize the data coming from APSIM simulations. Particular packages such as Tidyr and ggplot2 will be highly used. 
-
--Desired outcome
-A  tidy and reproducible database that includes all output variables from APSIM simulations and an interactive shiny web app to visualize data outcomes. 
+### Desired outcome:
+A  tidy database that includes all output variables from APSIM simulations and a reproducible analysis in form of an interactive shiny web app to visualize data outcomes. 
 
 
-What does the final product look like?
+### Main project deliverables
 
--Data base
--Set of graphs
+1. A [github repostiory](https://github.com/laila1986/Agro590_project) that contains:
 
+  1.1 All the raw and tidy datasets
+
+  1.2 R scripts for cleaning, tidyng, and munging
+
+  1.3 Rmd scrips for the reproducible analysis and visualization
+
+2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website 
+  
 ## Timeline
 
-Use an additional page to create a timeline. Use the timeline to describe deliverables that will be held accountable within your group. Consider creating tasks that are easily assignable within the group, with clear deadlines.
+```{r, echo=FALSE, message=FALSE}
+require(ggplot2)
+
+timeline <- read.csv("data/timeline.csv")
+timeline$start <- as.Date(timeline$start, format = "%m/%d/%y")
+timeline$end <- as.Date(timeline$end, format = "%m/%d/%y") 
+timeline$mid <- timeline$start + floor((timeline$end-timeline$start)/2) 
+
+# Timeline chart 
+ggplot(data=timeline) +
+  geom_rect(aes(ymin = item-0.25, ymax = item + 0.25, xmin=start, xmax=end, fill=as.factor(item)),colour="black") +
+  geom_text(aes(y=item, x=mid, label=item), size=10) + 
+  labs(y="Item (see table below)", title = "Project Timeline", x="") + 
+  scale_y_reverse() + 
+  theme_dark() + theme(legend.position = "none",
+                       text = element_text(size=16),
+                       axis.text.y = element_blank())
 
 
--Reading APSIM simulation outputs; November 1st
+knitr::kable(dplyr::select(timeline,item, deliverable),caption = "Item deliverables")
 
--Data cleaning, munging, and wrangling; November 7th
-
--Data analysis and visualization, November 21st
-
--Shyny app; December 1st
-
--Presentatio; Finals week  
-
-
-
-
-
-
-
-
+```
