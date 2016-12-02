@@ -22,4 +22,26 @@ met %>%
          rain2 = ifelse(rain > mRain, "Wet","Dry"),
          climate = paste(temp2,rain2,sep=" and ")) %>%
   select(year,climate) %>%
-  saveRDS("data/metYears.rds")
+  left_join(
+    met %>%
+      mutate(date = as.Date(day - 1, origin = paste0(year,"-01-01")),
+             month = month(date),
+             temp = (maxt + mint)*0.5,
+             season = ifelse(month %in% 4:10,"growing","winter")) %>%
+      filter(year < 2016) %>%
+      group_by(year, season) %>%
+      summarise(temp = mean(temp),
+                rain = sum(rain)) %>% 
+      filter(season == "growing") %>%
+      group_by() %>%
+      mutate(q33Temp = quantile(temp,0.33), 
+             q66Temp = quantile(temp,0.66),
+             q33Rain = quantile(rain,0.33), 
+             q66Rain = quantile(rain,0.66),
+             temp2 = ifelse(temp > q33Temp & temp < q66Temp,1,0), 
+             rain2 = ifelse(rain > q33Rain & temp < q66Rain,1,0),
+             climate2 = ifelse(temp2*rain2==1,"Average","0")) %>%
+      select(year,climate2)
+  ) %>%
+  mutate(climate = as.factor(ifelse(climate2 == "Average","Average",climate))) %>%
+  select(year,climate) %>% saveRDS("data/metYears.rds")

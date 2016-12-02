@@ -1,0 +1,61 @@
+variable,unitSI,unitEng,convertionFactor,convertionFactor2,userSelect,name
+Revenue,$/ha,$/acre,0.4046,0,1,Gross Margins
+FlowerDAS,DAS,days,1,0,1,R stages length
+FrostDaysSinceGrainFill,days,days,1,0,1,Frosts since planting
+FrostDaysSincePlanting,days,days,1,0,1,Frost since flowering
+GrowthCycle,days,days,1,0,1,Growth cycle
+AnnualGDD,GDD oC,GDD oF,1.8,0,,
+SeasonGDD,GDD oC,GDD oF,1.8,0,1,Thermal time
+CropBiomass,kg dm/ha,lb dm/a,0.892,0,1,Biomass
+SoyYield,kg dm/ha,bu/a @ 13%,0.017088123,0,1,Soybean grain
+CornYield,kg dm/ha,bu/a @ 15%,0.018308703,0,1,Corn grain
+AnnualGrossMiner,kg N/ha,lb N/a,0.892,0,,
+AnnualNdeposition,kg N/ha,lb N/a,0.892,0,,
+AnnualNetMiner,kg N/ha,lb N/a,0.892,0,,
+AnnualNfertilizer,kg N/ha,lb N/a,0.892,0,,
+AnnualNlossAir,kg N/ha,lb N/a,0.892,0,,
+AnnualNlossProfile,kg N/ha,lb N/a,0.892,0,,
+AnnualNlossTile,kg N/ha,lb N/a,0.892,0,,
+AnnualNlossTotal,kg N/ha,lb N/a,0.892,0,,
+CropNupt,g N/ha,lb N/a,8.92,0,1,Crop N uptake
+FloN120,kg N/ha,lb N/a,0.892,0,,
+FloN150,kg N/ha,lb N/a,0.892,0,,
+FloN180,kg N/ha,lb N/a,0.892,0,,
+FloN30,kg N/ha,lb N/a,0.892,0,,
+FloN60,kg N/ha,lb N/a,0.892,0,,
+FloN90,kg N/ha,lb N/a,0.892,0,,
+FloweringNO3Sum,kg N/ha,lb N/a,0.892,0,,
+HarN120,kg N/ha,lb N/a,0.892,0,,
+HarN150,kg N/ha,lb N/a,0.892,0,,
+HarN180,kg N/ha,lb N/a,0.892,0,,
+HarN30,kg N/ha,lb N/a,0.892,0,,
+HarN90,kg N/ha,lb N/a,0.892,0,,
+HarvestNO3Sum,kg N/ha,lb N/a,0.892,0,1,Residual N
+HarvN60,kg N/ha,lb N/a,0.892,0,,
+SeasonGrossMiner,kg N/ha,lb N/a,0.892,0,,
+SeasonHeatDays,kg N/ha,lb N/a,0.892,0,,
+SeasonNetMiner,kg N/ha,lb N/a,0.892,0,1,Seasonal N mineralization
+SeasonNlossAir,kg N/ha,lb N/a,0.892,0,,
+SeasonNlossProfilel,kg N/ha,lb N/a,0.892,0,,
+SeasonNlosstile,kg N/ha,lb N/a,0.892,0,,
+SeasonNlossTotal,kg N/ha,lb N/a,0.892,0,,
+SowingNO3Sum,kg N/ha,lb N/a,0.892,0,,
+SowN120,kg N/ha,lb N/a,0.892,0,,
+SowN150,kg N/ha,lb N/a,0.892,0,,
+SowN180,kg N/ha,lb N/a,0.892,0,,
+SowN30,kg N/ha,lb N/a,0.892,0,,
+SowN60,kg N/ha,lb N/a,0.892,0,,
+SowN90,kg N/ha,lb N/a,0.892,0,,
+AnnualDrain,mm,in,0.393700787,0,,
+AnnualRain,mm,in,0.393700787,0,,
+AnnualTile,mm,in,0.393700787,0,,
+FloweringSWSum,mm,in,0.393700787,0,,
+HarvestSWSum,mm,in,0.393700787,0,,
+SeasonDrain,mm,in,0.393700787,0,,
+SeasonRain,mm,in,0.393700787,0,1,Seasonal rain
+SeasonTile,mm,in,0.393700787,0,,
+SowingSW,mm,in,0.393700787,0,,
+SowingSWSum,mm,in,0.393700787,0,,
+AnnualAvgTemp,oC,oF,1.8,32,,
+SeasonAvgTemp,oC,oF,1.8,32,1,Seasonal Avg. Temp
+ReturnToN,$ /kg N,$ /lb N,2.202643172,0,1,Return to N applied

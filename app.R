@@ -1,57 +1,40 @@
-library(shiny)
-library(shinyTable)
+# Shiny app for data visualization ######
 
-server <- function(input, output, session) {
-  
-  rv <- reactiveValues(cachedTbl = NULL)
-  
-  output$tbl <- renderHtable({
-    if (is.null(input$tbl)){
+# Load packages #####################################################
+require(tidyverse)
+library(shinydashboard)
+
+# Load data #########################################################
+data <- readRDS("data/scenarios.rds")
+
+# Source helper code ################################################
+source("code/extract_keys.R")
+
+
+ui <- dashboardPage(
+  dashboardHeader(title = "FACTS"),
+  dashboardSidebar(),
+  dashboardBody(
+    # Boxes need to be put in a row (or column)
+    fluidRow(
+      box(plotOutput("plot1", height = 250)),
       
-      #fill table with 0
-      tbl <- matrix(0, nrow=3, ncol=3)
-      
-      rv$cachedTbl <<- tbl
-      return(tbl)
-    } else{
-      rv$cachedTbl <<- input$tbl
-      return(input$tbl)
-    }
-  })  
+      box(
+        title = "Controls",
+        sliderInput("slider", "Number of observations:", 1, 100, 50)
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  set.seed(122)
+  histdata <- rnorm(500)
   
-  output$tblNonEdit <- renderTable({
-    
-    #add dependence on button
-    input$actionButtonID
-    
-    #isolate the cached table so it only responds when the button is pressed
-    isolate({
-      rv$cachedTbl
-    })
-  })    
+  output$plot1 <- renderPlot({
+    data <- histdata[seq_len(input$slider)]
+    hist(data)
+  })
 }
 
-
-ui <- shinyUI(pageWithSidebar(
-  
-  headerPanel("shinyTable with actionButton to apply changes"),
-  
-  sidebarPanel(
-    helpText(HTML("A simple editable matrix with a functioning update button. 
-                  Using actionButton not submitButton. 
-                  Make changes to the upper table, press the button and they will appear in the lower. 
-                  <p>Created using <a href = \"http://github.com/trestletech/shinyTable\">shinyTable</a>."))
-  ),
-  
-  # Show the simple table
-  mainPanel(
-    #editable table
-    htable("tbl"),
-    #update button
-    actionButton("actionButtonID","apply table edits"),
-    #to show saved edits
-    tableOutput("tblNonEdit")
-  )
-))
-
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server)
