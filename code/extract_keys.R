@@ -26,3 +26,6 @@ cornKey <- list(
   Nrate = unique(data$corn$Nrate),
   waterTable = unique(data$corn$waterTable)
 )
+
+variables <- c(1:length((read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1))$name))
+names(variables) <- (read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1))$name 
