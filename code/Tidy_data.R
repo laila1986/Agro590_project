@@ -51,13 +51,20 @@ as_data_frame(corn) %>%
          Nrate = as.factor(SpringN + FallN))  %>%
   group_by(site, maturity, planting, residualN, previousCrop, waterTable, year) %>% 
   mutate(CornYield0 = sum(ifelse(Ntime == "No fertilizer", CornYield, 0)),
-         ReturnToN = corn_price*(CornYield - CornYield0)/(as.numeric(as.character(Nrate)))) %>%
+         ReturnToN = corn_price*(CornYield - CornYield0)/(as.numeric(as.character(Nrate))),
+         Ntime = as.factor(ifelse(Ntime %in% c("No fertilizer", "UAN injected at planting"), "UAN injected at planting", "Fall Ammonia"))) %>%
   left_join(metYears) %>%
   select(-plant_density, -AnnualIrrigation, -Date) %>%
   gather("variable","value",AnnualNlossTotal:HarN180, Revenue, CornYield, ReturnToN) %>% 
   group_by(site, maturity, Ntime, Nrate, planting, residualN, previousCrop, waterTable, climate,variable) %>% 
   summarise(mean = mean(value, na.rm=T), sd = sd(value,na.rm=T)) %>%
   mutate(cv = sd/mean) -> corn
+
+# make a copy of corn Nrate 0 
+x <- corn[corn$Nrate == 0,]
+x$Ntime <- "Fall Ammonia"
+corn <- rbind(corn,x)
+corn$Ntime <- as.factor(corn$Ntime)
 
 # Save sata object #####################################################
 

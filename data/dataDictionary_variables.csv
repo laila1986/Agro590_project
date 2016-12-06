@@ -46,16 +46,16 @@ SowN180,kg N/ha,lb N/a,0.892,0,,
 SowN30,kg N/ha,lb N/a,0.892,0,,
 SowN60,kg N/ha,lb N/a,0.892,0,,
 SowN90,kg N/ha,lb N/a,0.892,0,,
-AnnualDrain,mm,in,0.393700787,0,,
-AnnualRain,mm,in,0.393700787,0,,
-AnnualTile,mm,in,0.393700787,0,,
-FloweringSWSum,mm,in,0.393700787,0,,
-HarvestSWSum,mm,in,0.393700787,0,,
-SeasonDrain,mm,in,0.393700787,0,,
-SeasonRain,mm,in,0.393700787,0,1,Seasonal rain
-SeasonTile,mm,in,0.393700787,0,,
-SowingSW,mm,in,0.393700787,0,,
-SowingSWSum,mm,in,0.393700787,0,,
-AnnualAvgTemp,oC,oF,1.8,32,,
-SeasonAvgTemp,oC,oF,1.8,32,1,Seasonal Avg. Temp
+AnnualDrain,mm,in,0.039370079,0,,
+AnnualRain,mm,in,0.039370079,0,,
+AnnualTile,mm,in,0.039370079,0,,
+FloweringSWSum,mm,in,0.039370079,0,,
+HarvestSWSum,mm,in,0.039370079,0,,
+SeasonDrain,mm,in,0.039370079,0,,
+SeasonRain,mm,in,0.039370079,0,1,Seasonal rain
+SeasonTile,mm,in,0.039370079,0,,
+SowingSW,mm,in,0.039370079,0,,
+SowingSWSum,mm,in,0.039370079,0,,
+AnnualAvgTemp,oF,oF,1,0,,
+SeasonAvgTemp,oF,oF,1,0,1,Seasonal Avg. Temp
 ReturnToN,$ /kg N,$ /lb N,2.202643172,0,1,Return to N applied

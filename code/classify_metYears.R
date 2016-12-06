@@ -1,4 +1,5 @@
 # Classify wether years
+require(lubridate)
 
 met <- read_table("data/Ames.met",skip = 12,col_names = F)
 
@@ -34,12 +35,12 @@ met %>%
                 rain = sum(rain)) %>% 
       filter(season == "growing") %>%
       group_by() %>%
-      mutate(q33Temp = quantile(temp,0.33), 
-             q66Temp = quantile(temp,0.66),
-             q33Rain = quantile(rain,0.33), 
-             q66Rain = quantile(rain,0.66),
-             temp2 = ifelse(temp > q33Temp & temp < q66Temp,1,0), 
-             rain2 = ifelse(rain > q33Rain & temp < q66Rain,1,0),
+      mutate(q25Temp = quantile(temp,0.25), 
+             q75Temp = quantile(temp,0.75),
+             q25Rain = quantile(rain,0.25), 
+             q75Rain = quantile(rain,0.75),
+             temp2 = ifelse(temp > q25Temp & temp < q75Temp,1,0), 
+             rain2 = ifelse(rain > q25Rain & rain < q75Rain,1,0),
              climate2 = ifelse(temp2*rain2==1,"Average","0")) %>%
       select(year,climate2)
   ) %>%
