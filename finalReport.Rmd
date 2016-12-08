@@ -78,7 +78,7 @@ A  tidy database that includes all output variables from APSIM simulations and a
 2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website 
 
 
-# RAFA ADDED THIS 
+# Loading the data
 
 ```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
 ### Examples for creating scenario comparisons 
@@ -100,7 +100,6 @@ source("code/extract_keys.R")
 # APSIM data generator
 
 
-
 ```{r}
 file.info("data/rawData.zip")
 ```
@@ -118,7 +117,9 @@ knitr::kable(data_frame(Factor =names(cornKey),
 
 Simulations were conducted using a factorial arragements of the factors shown in Table 1, which produced `r length(corn_report$title)` and `r length(soybean_report$title)` individual factor combinations for corn and soybean, respectively, and for each of these, `r length(unique(metYears$year))` weather years (`r paste(min(metYears$year),max(metYears$year),sep="-")`) were simulated. Some of the simulations contained errors, that is, APSIM crashed and not all years were simulated, but this were a relative small number of simulations: `r length(corn_report$no_years[corn_report$no_years < 36])` (`r paste0( round(length(corn_report$no_years[corn_report$no_years < 36])/length(corn_report$no_years)*100,1),"%")`) of all corn simulations, and `r length(soybean_report$no_years[soybean_report$no_years < 36])` (`r paste0(round(length(soybean_report$no_years[soybean_report$no_years < 36])/length(soybean_report$no_years)*100,1),"%")`) of all soybean simulations.
 
-## Data cleaning
+## Data cleaning and tidying
+
+One of the most important things we learn in this class is how make the data "tidy", which means cleaning and structuring the data to facilitate analysis (Hadley Wickham). For us part of the initial cleaning involved working with the titles of each of the files of the simulated data. Basically file titles contained all the information related to the factors used to simulate the data and we wanted to keep this information as treatment factors in our data set. An example is listed below: 
 
 ```{r}
 
@@ -126,12 +127,21 @@ unique(readRDS("data/corn.rds")[,"title"])[1:3]
 
 ```
 
-We used `tidyr::separate()` function to extract the names of the factors using the ";" as separator 
-we used `gsub()` to clean the string from unwanted characters. 
+We used `tidyr::separate()` function to extract the names of the factors using the ";" as separator and `gsub()` to clean the string from unwanted characters. 
+The `dply::mutate()` fuction allowed us to add new variables while preserving the existing variables in the data set. 
+Using the `dplyr::group by` and the `dply::summarise` fuction we were able to get statistics (mean and standard deviation) for a group of selected variables. 
+We classified into "average", "warm and dry", "warm and wet", "cool and dry", and "cool and wet" the weather data used to run the APSIM model and we joined that description with the "soy" or "corn" data, respectively (`dplyr::join left`). 
+At the final steps of the data transformation we have several variable () that were names in the columns of the data set, we used `tidyr::gather` to gather the selected columns into key-value pairs of "variable" and "value" make a selection of column names variables that were showing as a name in a column  of the a selection of variables. 
 
 
-## Climate year classification 
 
+#Weather classification
+
+```{r}
+
+head(metYears)
+
+```
 
 ```{r, fig.height=4, fig.width=6, message=TRUE, warning=TRUE}
 
@@ -163,6 +173,8 @@ met %>%
 
 
 ```
+
+
 
 
 ## Multi Scenario function

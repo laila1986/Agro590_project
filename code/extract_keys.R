@@ -34,3 +34,4 @@ for(i in 1:length(cornKey)) { cornKey[[i]] <- as.character(cornKey[[i]]) }
 
 variables <- c(1:length((read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1))$name))
 names(variables) <- (read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1))$name 
+
