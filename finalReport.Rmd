@@ -78,6 +78,8 @@ A  tidy database that includes all output variables from APSIM simulations and a
 2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website 
 
 
+
+
 # Loading the data
 
 ```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
@@ -174,7 +176,7 @@ met %>%
 
 ```
 
-
+In order to show a selection of the factor used for the simulations we create a fuction in which the levels of each of the factors is selected ramdonmly 
 
 
 ## Multi Scenario function
