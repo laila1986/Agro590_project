@@ -5,6 +5,24 @@ date: "December 13, 2016"
 output: html_document
 ---
 
+```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
+### Examples for creating scenario comparisons 
+
+# Load packages #####################################################
+library(tidyverse)
+library(ggthemes)
+library(lubridate)
+
+# Load data #########################################################
+data <- readRDS("data/scenarios.rds")
+metYears <- readRDS("data/metYears.rds")
+
+# Source helper code ################################################
+source("code/extract_keys.R")
+
+```
+
+
 ## Background
 
 ### Forecast and Assessment of Cropping sysTemS ([FACTS](http://crops.extension.iastate.edu/facts/) ): "The FACTS project"
@@ -61,11 +79,11 @@ Potentially consider objectives for this class, as well as long term (if necessa
 
 R software will be the main tool to read, clean, reshape, analyze, and visualize the data coming from APSIM simulations. Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` will be highly used. 
 
-### Desired outcome:
+## Desired outcome:
 A  tidy database that includes all output variables from APSIM simulations and a reproducible analysis in form of an interactive shiny web app to visualize data outcomes. 
 
 
-### Main project deliverables
+## Main project deliverables
 
 1. A [github repostiory](https://github.com/laila1986/Agro590_project) that contains:
 
@@ -79,33 +97,14 @@ A  tidy database that includes all output variables from APSIM simulations and a
 
 
 
+#Outcomes
 
-# Loading the data
+## APSIM data generator
 
-```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
-### Examples for creating scenario comparisons 
-
-# Load packages #####################################################
-require(tidyverse)
-require(ggthemes)
-require(lubridate)
-
-# Load data #########################################################
-data <- readRDS("data/scenarios.rds")
-metYears <- readRDS("data/metYears.rds")
-
-# Source helper code ################################################
-source("code/extract_keys.R")
-
-```
-
-# APSIM data generator
-
-
-```{r}
+```{r, eval=FALSE, include=FALSE}
 file.info("data/rawData.zip")
-```
 
+```
 
 ```{r, echo=FALSE, message=TRUE, warning=FALSE}
 corn_report <- readRDS("data/corn_report.rds")
@@ -117,13 +116,16 @@ knitr::kable(data_frame(Factor =names(cornKey),
              caption = "Table 1. Factor levels used for the APSIM scenario analysis")
 ```
 
-Simulations were conducted using a factorial arragements of the factors shown in Table 1, which produced `r length(corn_report$title)` and `r length(soybean_report$title)` individual factor combinations for corn and soybean, respectively, and for each of these, `r length(unique(metYears$year))` weather years (`r paste(min(metYears$year),max(metYears$year),sep="-")`) were simulated. Some of the simulations contained errors, that is, APSIM crashed and not all years were simulated, but this were a relative small number of simulations: `r length(corn_report$no_years[corn_report$no_years < 36])` (`r paste0( round(length(corn_report$no_years[corn_report$no_years < 36])/length(corn_report$no_years)*100,1),"%")`) of all corn simulations, and `r length(soybean_report$no_years[soybean_report$no_years < 36])` (`r paste0(round(length(soybean_report$no_years[soybean_report$no_years < 36])/length(soybean_report$no_years)*100,1),"%")`) of all soybean simulations.
+Simulations were conducted using a factorial arragements of the factors shown in Table 1, which produced `r length(corn_report$title)` and `r length(soybean_report$title)` individual factor combinations for corn and soybean, respectively, and for each of these, `r length(unique(metYears$year))` weather years (`r paste(min(metYears$year),max(metYears$year),sep="-")`) were simulated. Some of the simulations contained errors, that is, APSIM crashed and not all years were simulated, but this were a relative small number of simulations: `r length(corn_report$no_years[corn_report$no_years < 36])` (`r paste0( round(length(corn_report$no_years[corn_report$no_years < 36])/length(corn_report$no_years)*100,1),"%")`) of all corn simulations, and `r length(soybean_report$no_years[soybean_report$no_years < 36])` (`r paste0(round(length(soybean_report$no_years[soybean_report$no_years < 36])/length(soybean_report$no_years)*100,1),"%")`) of all soybean simulations. A copy a of all output files from each of the runs in APSIM was storage in the repo in the "rawdata" folder. 
+
+
+Once we had the raw data sets we used the scripts for extracting and compiling corn and soybean data from APSIM which are the ".out" files (`r list.files("code/")[2:3]`). In those scripts we unzipped the data `utils::unzip`, we looped through each of the files to save all the data and also to add the information on the name of the files. The names of the files contain the description of the factors used in each of the simulations. Finaly, we used `base::saveRDS` to save the objects created within the loop in R into a ".rds" object. This allows us to access to the data later on just by reading those objects with the fuction `base:: readRDS`. 
 
 ## Data cleaning and tidying
 
-One of the most important things we learn in this class is how make the data "tidy", which means cleaning and structuring the data to facilitate analysis (Hadley Wickham). For us part of the initial cleaning involved working with the titles of each of the files of the simulated data. Basically file titles contained all the information related to the factors used to simulate the data and we wanted to keep this information as treatment factors in our data set. An example is listed below: 
+One of the most important things we learnt in class was how make the data "tidy" and the importance of it. Get your data "tidy" means cleaning and structuring the data to facilitate analysis (Hadley Wickham). Part of our initial cleaning involved working with the names of each of the files coming from APSIM. The name of the files containes all the information related to the factors used to simulate the data and we wanted to keep this information as treatment factors in our data set. An example of the names of the files is listed below:
 
-```{r}
+```{r, echo=FALSE}
 
 unique(readRDS("data/corn.rds")[,"title"])[1:3]
 
@@ -135,11 +137,12 @@ Using the `dplyr::group by` and the `dply::summarise` fuction we were able to ge
 We classified into "average", "warm and dry", "warm and wet", "cool and dry", and "cool and wet" the weather data used to run the APSIM model and we joined that description with the "soy" or "corn" data, respectively (`dplyr::join left`). 
 At the final steps of the data transformation we have several variable () that were names in the columns of the data set, we used `tidyr::gather` to gather the selected columns into key-value pairs of "variable" and "value" make a selection of column names variables that were showing as a name in a column  of the a selection of variables. 
 
+### Weather classification
+
+As metioned above we wanted to keep the classification of the weather as part of our data set. Over the 35 years used to run the simulations there are between 7-8 years representing each of categories.
 
 
-#Weather classification
-
-```{r}
+```{r, echo=FALSE}
 
 head(metYears)
 
@@ -176,10 +179,9 @@ met %>%
 
 ```
 
-In order to show a selection of the factor used for the simulations we create a fuction in which the levels of each of the factors is selected ramdonmly 
+In order to show a selection of the levels within each of the factors used for the simulations we created a fuction **Multi Scenario Funtion** in which the levels of each of the factors is selected ramdonmly. For example Table 2 and 3 shows the randomly selected factor for soybean and corn, respectively. 
 
-
-## Multi Scenario function
+### Multi Scenario function
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
 
@@ -211,11 +213,53 @@ multiscenario_random <- function(inputs,n=3){
 
 ```
 
+To generate the scenarios we used as an input of the function the **soybeanKey** and the **cornKey** created usign the following script : 
+
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+
+# Inputs ############################################################
+
+soybeanKey <- list(
+  site = unique(data$soybean$site),
+  climate = unique(data$soybean$climate),
+  maturity = unique(data$soybean$maturity),
+  planting = unique(data$soybean$planting),
+  residualN = unique(data$soybean$residualN),
+  previousCrop = unique(data$soybean$previousCrop),
+  waterTable = unique(data$soybean$waterTable)
+)
+
+for(i in 1:length(soybeanKey)) { soybeanKey[[i]] <- as.character(soybeanKey[[i]]) }
+
+
+cornKey <- list(
+  site = unique(data$corn$site),
+  climate = unique(data$corn$climate),
+  maturity = unique(data$corn$maturity),
+  planting = unique(data$corn$planting),
+  residualN = unique(data$corn$residualN),
+  previousCrop = unique(data$corn$previousCrop),
+  waterTable = unique(data$corn$waterTable),
+  Ntime = unique(data$corn$Ntime),
+  Nrate = unique(data$corn$Nrate)
+)
+
+for(i in 1:length(cornKey)) { cornKey[[i]] <- as.character(cornKey[[i]]) }
+```
+
+
+We will now explore the data by generating a selection of graphs to visualize and answar some interesting questions about corn and soybean grwoing under different scenarios. 
+
+### Loading the data
+
+
 
 ```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 scenarioTable_soy <- multiscenario_random(soybeanKey,4)
-knitr::kable(select(scenarioTable_soy, scenario, site:waterTable))
+knitr::kable(select(scenarioTable_soy, scenario, site:waterTable),
+             caption = "Table 2. Scenario analysis Soybeans")
 
 scenarioTable_soy %>%
   left_join(data$soybean %>% 
@@ -237,7 +281,8 @@ scenarioTable_soy %>%
 # Example of corn ##################################################
 
 scenarioTable_corn <- multiscenario_random(cornKey,4)
-knitr::kable(select(scenarioTable_corn, scenario, site:Nrate))
+knitr::kable(select(scenarioTable_corn, scenario, site:Nrate),
+             caption = "Table 3. Scenario analysis Corn")
 
 scenarioTable_corn %>%
   inner_join(data$corn %>% 
@@ -255,3 +300,5 @@ scenarioTable_corn %>%
   theme_linedraw() + theme(legend.position="none") 
 
 ```
+
+
