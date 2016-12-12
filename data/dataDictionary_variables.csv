@@ -16,7 +16,7 @@ AnnualNfertilizer,kg N/ha,lb N/a,0.892,0,,
 AnnualNlossAir,kg N/ha,lb N/a,0.892,0,,
 AnnualNlossProfile,kg N/ha,lb N/a,0.892,0,,
 AnnualNlossTile,kg N/ha,lb N/a,0.892,0,,
-AnnualNlossTotal,kg N/ha,lb N/a,0.892,0,,
+AnnualNlossTotal,kg N/ha,lb N/a,0.892,0,1,Total N loss
 CropNupt,g N/ha,lb N/a,8.92,0,1,Crop N uptake
 FloN120,kg N/ha,lb N/a,0.892,0,,
 FloN150,kg N/ha,lb N/a,0.892,0,,

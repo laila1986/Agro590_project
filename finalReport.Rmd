@@ -118,7 +118,6 @@ knitr::kable(data_frame(Factor =names(cornKey),
 
 Simulations were conducted using a factorial arragements of the factors shown in Table 1, which produced `r length(corn_report$title)` and `r length(soybean_report$title)` individual factor combinations for corn and soybean, respectively, and for each of these, `r length(unique(metYears$year))` weather years (`r paste(min(metYears$year),max(metYears$year),sep="-")`) were simulated. Some of the simulations contained errors, that is, APSIM crashed and not all years were simulated, but this were a relative small number of simulations: `r length(corn_report$no_years[corn_report$no_years < 36])` (`r paste0( round(length(corn_report$no_years[corn_report$no_years < 36])/length(corn_report$no_years)*100,1),"%")`) of all corn simulations, and `r length(soybean_report$no_years[soybean_report$no_years < 36])` (`r paste0(round(length(soybean_report$no_years[soybean_report$no_years < 36])/length(soybean_report$no_years)*100,1),"%")`) of all soybean simulations. A copy a of all output files from each of the runs in APSIM was storage in the repo in the "rawdata" folder. 
 
-
 Once we had the raw data sets we used the scripts for extracting and compiling corn and soybean data from APSIM which are the ".out" files (`r list.files("code/")[2:3]`). In those scripts we unzipped the data `utils::TTunzip`, we looped through each of the files to save all the data and also to add the information on the name of the files. The names of the files contain the description of the factors used in each of the simulations. Finaly, we used `base::saveRDS` to save the objects created within the loop in R into a ".rds" object. This allows us to access to the data later on just by reading those objects with the fuction `base:: readRDS`. 
 
 ## Data cleaning and tidying
@@ -126,9 +125,7 @@ Once we had the raw data sets we used the scripts for extracting and compiling c
 One of the most important things we learnt in class was how make the data "tidy" and the importance of it. Get your data "tidy" means cleaning and structuring the data to facilitate analysis (Hadley Wickham). Part of our initial cleaning involved working with the names of each of the files coming from APSIM. The name of the files containes all the information related to the factors used to simulate the data and we wanted to keep this information as treatment factors in our data set. An example of the names of the files is listed below:
 
 ```{r, echo=FALSE}
-
 unique(readRDS("data/corn.rds")[,"title"])[1:3]
-
 ```
 
 We used `tidyr::separate()` function to extract the names of the factors using the ";" as separator and `gsub()` to clean the string from unwanted characters. 
@@ -150,7 +147,7 @@ head(metYears)
 
 ```{r, fig.height=4, fig.width=6, message=TRUE, warning=TRUE}
 
-met <- read_table("data/Ames.met",skip = 12,col_names = F)
+met <- read.table("data/Ames.met",skip = 12,header = F)
 
 names <- read_lines("data/Ames.met")[11]
 names(met) <- unlist(strsplit(names," "))[unlist(strsplit(names," ")) != ""]
@@ -166,7 +163,7 @@ met %>%
             rain = sum(rain)) %>% 
   filter(season == "growing") %>%
   select(year,temp,rain) %>%
-  left_join(metYears) %>%
+  left_join(metYears, by="year") %>%
   ggplot(aes(temp,rain)) +
   geom_hline(aes(yintercept=median(rain)),linetype = "dotted") +
   geom_vline(aes(xintercept=median(temp)),linetype = "dotted") +
@@ -179,7 +176,164 @@ met %>%
 
 ```
 
-In order to show a selection of levels within each of the factors used for the simulations we created a fuction **Multi Scenario Funtion** in which the levels of each of the factors is selected ramdonmly. For example Table 2 and 3 shows the randomly selected factor for soybean and corn, respectively.
+## Workflow and Reproducibility
+
+One of our maian goals of this project is to have everything well documented in order to make it as much as **reporducible** as possible. We hope this work is the starting point for our Lab group to make future collabaorations and to expand the data set already created here. At this point we believe we made: 
+
+- Scripts for each of our main steps describing the job to built the data base and a summary of the scenarios for each of the crops
+- An organized repo where data and scripts are classify in different folders 
+- Relative paths that refer only to the project directory and not to the specific computer
+- Script on the scripts to keep an order of the steps you need to take in this project
+
+
+Complementary to the main steps to build a **reproducible** project we created a separate file that explains what everything is (**Data Diccionary**): 
+
+``` {r, }
+head(as.data.frame(read_csv("data/dataDictionary_variables.csv")))
+
+```
+
+In this dictionary we aimed to have the exact names of each of the variables (name), a version of the name for visualization (variable), and the units in metric and english system (unitSi and unitEng). 
+
+## Visualization Examples
+
+The graps bellow are an overview of some of the main vairables simulated in each of the scenarios and few examples of interesting questions that can be answerd using our data set. One of our final objetives of this work in to create a shiny webapp to be included in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website. 
+
+### How does the corn yield response to nitrogen change according to the class of year and time of N application? Average maturity group and planting date were selected. 
+
+```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
+
+data$corn %>%
+  inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
+  mutate(N.rate= as.numeric(as.character(Nrate)), mean = mean*convertionFactor + convertionFactor2,
+         sd = sd*convertionFactor + convertionFactor2) %>% filter(maturity =="normal", planting== "1-may", variable== "CornYield") %>%
+  group_by(site, Ntime, Nrate, climate) %>%
+  summarise(mean=mean(mean,na.rm=T), sd=sd(sd,na.rm=T)) %>%
+  ggplot(aes(y= mean, x= as.numeric(as.character(Nrate)), colour= Ntime, shape=site)) +
+  geom_point() +
+  geom_line() + 
+  geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=10)+
+  labs(x= expression(paste("N rate (kg N ",ha^ {- 1}, ")")),
+       y = expression(paste("Yield (bu ",ac^{- 1}, ")")),
+       colour = "", 
+       shape = "")+
+  facet_wrap(~climate) + 
+  theme_base() + theme(legend.position = "top")
+
+
+```
+
+### How does the nitrogen uptake change based on the planting date and the maturity of the crop for Ames and Cobs? Does the water table play a role in this relationships? 
+
+```{r, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
+
+data$corn %>% 
+  filter (waterTable == "1200", variable == "CropNupt") %>%
+  group_by(planting, maturity, Nrate) %>%
+  summarise(mean=mean(mean,na.rm=T), sd=sd(sd,na.rm=T)) %>%
+  ggplot(aes(y= mean, colour=planting, x = as.numeric(as.character(Nrate)))) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ poly(x,2), se=F) + 
+  geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=0.3) +
+  labs(y = expression(paste("N uptake (kg N ",ha^ {- 1}, ")")),
+       x = expression(paste("N rate (kg N ",ha^ {- 1}, ")")),
+       colour = "Planting date")+
+  facet_grid(.~maturity) + 
+  theme_base() + theme(legend.position = "top")
+
+
+```
+
+```{r, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
+
+data$soybean %>% 
+  inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
+  mutate(mean = mean*convertionFactor + convertionFactor2,
+  sd = sd*convertionFactor + convertionFactor2) %>% filter (waterTable == "1200", variable == "CropNupt") %>%
+  group_by(planting, maturity) %>%
+  summarise(mean=mean(mean,na.rm=T), sd=sd(sd,na.rm=T)) %>%
+  ggplot(aes(y= mean, colour=maturity, x = yday(as.Date(paste0(planting,"-2016"), format = "%d-%B-%Y")))) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ poly(x,2), se=F) + 
+  geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=0.3) +
+  labs(y = expression(paste("N uptake (kg N ",ha^ {- 1}, ")")),
+       x = "Planting date (doy)",
+       colour = "Maturity")+
+  #facet_grid(.~maturity) + 
+  theme_base() + theme(legend.position = "top")
+
+```
+
+### What are the main factor explaining the variance of each of the variables masured in each of the simulations ?
+
+```{r, echo=FALSE, message=FALSE, warning=TRUE}
+
+data$corn %>%
+  inner_join(read.csv("data/dataDictionary_variables.csv") %>% select(variable,userSelect,name),by="variable") %>%
+  filter(userSelect == 1) %>%
+  mutate(name = gsub(" ","_",name)) %>%
+  group_by(site, maturity, Ntime, Nrate, planting, residualN, previousCrop, waterTable, climate) %>% 
+  select(-sd,-cv, -userSelect,-variable) %>%
+  spread("name", "mean") -> cornModels
+
+cornVars <- data.frame()
+
+for(i in 10:length(cornModels)) {
+  y <- unlist(cornModels[,i], use.names = FALSE)
+  modCorn <- lm(y ~ maturity + Ntime + as.numeric(as.character(Nrate)) + as.character(planting) + as.numeric(as.character(residualN)) + previousCrop + as.numeric(as.character(waterTable)) + climate,
+                data=cornModels)
+  cornVars <- rbind(cornVars,
+                    data.frame(y = names(cornModels)[i],
+                               factor = c( "maturity", "Ntime", "Nrate", "planting", "residualN", "previousCrop", "waterTable", "climate","_modelResiduals"),
+                               percentVar = sqrt(anova(modCorn)$`Mean Sq`)/sum(sqrt(anova(modCorn)$`Mean Sq`))*100))
+}
+
+ggplot(data=cornVars, aes(y,percentVar,fill=factor)) + 
+  geom_bar(stat = "identity", colour = "black") + 
+  labs(x="", y="% Variance", fill="") + 
+  coord_flip() +
+  theme_bw() + theme(text = element_text(size=10), legend.position = "bottom")
+
+
+```
+
+
+
+
+```{r, echo=FALSE, message=FALSE, warning=TRUE}
+
+data$soybean %>%
+  inner_join(read.csv("data/dataDictionary_variables.csv") %>% select(variable,userSelect,name),by="variable") %>%
+  filter(userSelect == 1) %>%
+  mutate(name = gsub(" ","_",name)) %>%
+  group_by(site, maturity,planting, residualN, previousCrop, waterTable, climate) %>% 
+  select(-sd,-cv, -userSelect,-variable) %>%
+  spread("name", "mean") -> soyModels
+
+soyVars <- data.frame()
+
+for(i in 10:length(soyModels)) {
+  y <- unlist(soyModels[,i], use.names = FALSE)
+  modSoy <- lm(y ~ maturity + as.character(planting) + as.numeric(as.character(residualN)) + previousCrop + as.numeric(as.character(waterTable)) + climate,
+                data=soyModels)
+  soyVars <- rbind(soyVars,
+                    data.frame(y = names(soyModels)[i],
+                               factor = c( "maturity","planting", "residualN", "previousCrop", "waterTable", "climate","_modelResiduals"),
+                               percentVar = sqrt(anova(modSoy)$`Mean Sq`)/sum(sqrt(anova(modSoy)$`Mean Sq`))*100))
+}
+
+ggplot(data=soyVars, aes(y,percentVar,fill=factor)) + 
+  geom_bar(stat = "identity", colour = "black") + 
+  labs(x="", y="% Variance", fill="") + 
+  coord_flip() +
+  theme_bw() + theme(text = element_text(size=10), legend.position = "bottom")
+
+
+```
+
+## Scenario Comparison
+
+In order to show a selection of levels within each of the factors used for the simulations we created a fuction **Multi Scenario Funtion** in which the levels of each of the factors is selected randomly. For example Table 2 and 3 shows the randomly selected factor for soybean and corn, respectively.
 
 ### Multi Scenario function
 
@@ -249,34 +403,13 @@ for(i in 1:length(cornKey)) { cornKey[[i]] <- as.character(cornKey[[i]]) }
 ```
 
 
-One of our maian goals of this project is to have everything well documented in order to make it as much as **reporducible** as possible. We hope this work is the starting point for our Lab group to make future collabaorations and to expand the data set already created here. At this point we believe we made: 
-
-### Scripts for each of our main steps describing the jog to built the data base and a summary of the scenarios for each of the crops
-### An organized repo where data and scripts are classify in different folders 
-### Relative paths that refer only to the project directory and not to the specific computer
-### Script Oon the scripts to keep an order of the steps you need to take in this project
-
-
-Complementary to the main steps to build a **reproducible** project we created a separate file that explains what everything is (**Data Diccionary**): 
-
-``` {r, }
-head(as.data.frame(read_csv("data/dataDictionary_variables.csv")))
-
-```
-
-In this dicctionarry we aimed to have the exact names of each of the variables (name), a version of the name for visualization (variable), and the units in metric and english system (unitSi and unitEng). 
-
-
-The graps bellow are an overview of some of the main vairables simulated in each of the scenarios and few examples of interesting questions that can be answerd using our data set. One of our final objetives of this work in to create a shiny webapp to be included in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website. 
-
-## Visualization
-
 
 ### Comparison of selected scenarios for Soybean 
 
 ```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 scenarioTable_soy <- multiscenario_random(soybeanKey,4)
+
 knitr::kable(select(scenarioTable_soy, scenario, site:waterTable),
              caption = "Table 2. Scenario analysis Soybeans")
 
@@ -296,7 +429,7 @@ scenarioTable_soy %>%
 ```
 
 
-###Comparison of selected scnearions for corn
+### Comparison of selected scnearions for corn
 
 ```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
 # Example of corn ##################################################
@@ -321,82 +454,6 @@ scenarioTable_corn %>%
   theme_linedraw() + theme(legend.position="none") 
 
 ```
-
-
-### How does the corn yield response to nitrogen change according to the class of year and time of N application? Average maturity group and planting date were selected. 
-
-#### Site: Ames
-
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
-  data$corn %>% 
-              inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
-                         mutate(N.rate= as.numeric(as.character(Nrate)), mean = mean*convertionFactor + convertionFactor2,
-                         sd = sd*convertionFactor + convertionFactor2) %>% filter (site== "Ames", maturity =="normal", planting== "1-may", variable== "CornYield") %>%
-              ggplot(aes(y= mean, x= Nrate, colour= Ntime)) +
-              geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=0.3)+
-              xlab(expression (paste("N rate (kg N ",ha^ {- 1}, ")")))+
-              ylab(expression(paste("Yield (bu ",ac^{- 1}, ")")))+
-              facet_wrap(~ climate)       
-                     
-```                     
-                     
-### Site: Cobs
-
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
-
-data$corn %>% 
-              inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
-                         mutate(N.rate= as.numeric(as.character(Nrate)), mean = mean*convertionFactor + convertionFactor2,
-                         sd = sd*convertionFactor + convertionFactor2) %>% filter (site== "Cobs", maturity =="normal", planting== "1-may", variable== "CornYield") %>%
-              ggplot(aes(y= mean, x= Nrate, colour= Ntime)) +
-              geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=0.3)+
-              xlab(expression (paste("N rate (kg N ",ha^ {- 1}, ")")))+
-              ylab(expression(paste("Yield (bu ",ac^{- 1}, ")")))+
-              facet_wrap(~ climate)
-
-
-```
-
-### How does the nitrogen uptake change based on the planting data and the maturity of the crop for Ames and Cobs ? Does the water table play a role in this relationships? 
-
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
-
-data$corn %>% 
-              inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
-                         mutate(mean = mean*convertionFactor + convertionFactor2,
-                         sd = sd*convertionFactor + convertionFactor2) %>% filter (Nrate= "200", variable== "CropNupt") %>%
-              ggplot(aes(y= mean, x= planting, colour= maturity)) +
-              geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=0.3)+
-              ylab(expression (paste("N uptake (kg N ",ha^ {- 1}, ")")))+
-              xlab("Planting date" )+
-              facet_wrap(site~ waterTable)
-
-
-```
-
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
-
-data$soybean %>% 
-              inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
-                         mutate(mean = mean*convertionFactor + convertionFactor2,
-                         sd = sd*convertionFactor + convertionFactor2) %>% filter ( variable== "CropNupt") %>%
-              ggplot(aes(y= mean, x= planting, colour= maturity)) +
-              geom_errorbar(aes(ymin = mean-sd, ymax=mean+sd), width=0.3)+
-              ylab(expression (paste("N uptake (kg N ",ha^ {- 1}, ")")))+
-              xlab("Planting date" )+
-              facet_wrap(site~ waterTable)
-
-
-```
-
-
-
-
-
-### What are the main factor explaining the variance of each of the variables masured in each of the simulations ?
-
-
-
 
   
   

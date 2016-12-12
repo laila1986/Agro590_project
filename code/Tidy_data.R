@@ -20,10 +20,12 @@ as_data_frame(soy) %>%
          planting = ordered(gsub("date=","",planting), levels= c("15-apr","1-may","15-may","1-jun","15-jun")),
          residualN = factor(as.numeric(gsub("[^[:digit:]]","",residualN))),
          previousCrop = factor(gsub("Residue_SOM=SOM","",previousCrop)),
-         waterTable = factor(as.numeric(gsub("[^[:digit:]]","",waterTable)))) %>%
+         waterTable = factor(as.numeric(gsub("[^[:digit:]]","",waterTable))),
+         AnnualFWANC = ifelse(AnnualTile ==0 , NA, AnnualNlossTile/AnnualTile*100),
+         SeasonFWANC = ifelse(SeasonTile ==0 , NA, SeasonNlosstile/SeasonTile*100)) %>%
   left_join(metYears) %>%
   select(-plant_density, -AnnualIrrigation, -Date) %>%
-  gather("variable","value",AnnualNlossTotal:HarN180, Revenue,SoyYield) %>% 
+  gather("variable","value",AnnualNlossTotal:HarN180, Revenue,SoyYield,AnnualFWANC, SeasonFWANC) %>% 
   group_by(site, maturity, planting, residualN, previousCrop, waterTable, climate,variable) %>% 
   summarise(mean = mean(value, na.rm=T), sd = sd(value,na.rm=T)) %>%
   mutate(cv = sd/mean) -> soy
@@ -50,12 +52,14 @@ as_data_frame(corn) %>%
   mutate(Ntime = as.factor(ifelse(SpringN > 0, "UAN injected at planting", ifelse(FallN > 0, "Fall Ammonia", "No fertilizer"))),
          Nrate = as.factor(SpringN + FallN))  %>%
   group_by(site, maturity, planting, residualN, previousCrop, waterTable, year) %>% 
-  mutate(CornYield0 = sum(ifelse(Ntime == "No fertilizer", CornYield, 0)),
+  mutate(AnnualFWANC = ifelse(AnnualTile ==0 , NA, AnnualNlossTile/AnnualTile*100),
+         SeasonFWANC = ifelse(SeasonTile ==0 , NA, SeasonNlosstile/SeasonTile*100),
+           CornYield0 = sum(ifelse(Ntime == "No fertilizer", CornYield, 0)),
          ReturnToN = corn_price*(CornYield - CornYield0)/(as.numeric(as.character(Nrate))),
          Ntime = as.factor(ifelse(Ntime %in% c("No fertilizer", "UAN injected at planting"), "UAN injected at planting", "Fall Ammonia"))) %>%
   left_join(metYears) %>%
   select(-plant_density, -AnnualIrrigation, -Date) %>%
-  gather("variable","value",AnnualNlossTotal:HarN180, Revenue, CornYield, ReturnToN) %>% 
+  gather("variable","value",AnnualNlossTotal:HarN180, Revenue, CornYield, ReturnToN, AnnualFWANC, SeasonFWANC) %>% 
   group_by(site, maturity, Ntime, Nrate, planting, residualN, previousCrop, waterTable, climate,variable) %>% 
   summarise(mean = mean(value, na.rm=T), sd = sd(value,na.rm=T)) %>%
   mutate(cv = sd/mean) -> corn

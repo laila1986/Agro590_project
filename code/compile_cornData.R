@@ -16,7 +16,7 @@ files <- list.files(base_path)
 out <- data.frame()
 report <- data.frame()
 
-# Loop for compiling soybean dataset
+# Loop for compiling corn dataset
 for(i in 1:length(files)){
   names <- read_lines(paste0(base_path,files[i]))[4]
   table <- read.table(paste0(base_path,files[i]),skip = 5, na = "?", header = F)
@@ -24,6 +24,7 @@ for(i in 1:length(files)){
   table$title <- files[i]
   out <- rbind(out,table)
   report <-rbind(report,data.frame(title=files[i], no_years=length(table$year)))
+  cat("\r", i, "of", length(files),"files")
   #unlink(paste0(base_path,files[i]), recursive = FALSE)
 }
 
