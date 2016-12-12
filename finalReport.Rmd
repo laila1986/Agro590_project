@@ -297,9 +297,6 @@ ggplot(data=cornVars, aes(y,percentVar,fill=factor)) +
 
 ```
 
-
-
-
 ```{r, echo=FALSE, message=FALSE, warning=TRUE}
 
 data$soybean %>%
@@ -403,7 +400,6 @@ for(i in 1:length(cornKey)) { cornKey[[i]] <- as.character(cornKey[[i]]) }
 ```
 
 
-
 ### Comparison of selected scenarios for Soybean 
 
 ```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
@@ -432,7 +428,6 @@ scenarioTable_soy %>%
 ### Comparison of selected scnearions for corn
 
 ```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
-# Example of corn ##################################################
 
 scenarioTable_corn <- multiscenario_random(cornKey,4)
 knitr::kable(select(scenarioTable_corn, scenario, site:Nrate),
@@ -456,8 +451,14 @@ scenarioTable_corn %>%
 ```
 
   
-  
-  
+## Next steps
+
+### Shiny app development
+
+### More sites 
+
+
+
   
   
   

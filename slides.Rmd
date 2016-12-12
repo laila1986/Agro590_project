@@ -2,9 +2,10 @@
 title: "Project AGRON590"
 author: "Laila Puntel and Rafael Martinez-Feria"
 date: "December 12, 2016"
-output: ioslides_presentation
-widescreen: TRUE
-incremental: true
+output:
+  ioslides_presentation: default
+  slidy_presentation: default
+incremental: yes
 ---
 
 
@@ -25,16 +26,14 @@ source("code/extract_keys.R")
 
 ```
 
-## Background
+# Background
 
-"The FACTS project"
+## The FACTS project
 
 ![](images/site.png)
 
 
-##Background
-
-###Not only the data is what it matters!
+## Not only the data is what it matters!
 
 
 
@@ -45,17 +44,14 @@ source("code/extract_keys.R")
 - Do I have enough soil water and nitrogen for the next few days? 
 
 
-##Background
-###APSIM plataform
+## APSIM plataform
 
 <div align="center">
 <img src="images/Apsim2.png" width=500 height=350>
 </div>
 
 
-
-##Background
-###In-Season We use APSIM’s output to provide real-time **estimates** and **forecasts** for 
+## In-Season We use APSIM's output to provide real-time **estimates** and **forecasts** for 
 
 - Weather
 
@@ -67,11 +63,7 @@ source("code/extract_keys.R")
 
 - Crop staging 
 
-
-
-
-##Background
-### Hindcast: What if? 
+## Hindcast: What if? 
 
 When the season is over ...there is more work to do! Farmers may be asking themselves these kinds of questions:
 
@@ -81,7 +73,7 @@ When the season is over ...there is more work to do! Farmers may be asking thems
 
 > What if I had gotten more rain?
 
-##Background
+## The problem
 
 APSIM outputs are messy
 
@@ -91,7 +83,6 @@ substr(read_lines("data/outfile_example.txt"), 1,100)[1:10]
 
 ## Objectives
 
-
 1. Create a database from APSIM outputs in a **"tidy"** format to facilitate analysis.
 
 2. Set up a flexible data process and analysis workflow of APSIM simulation to allow collaboration and reproducibility of our project team it in the long term.
@@ -99,7 +90,6 @@ substr(read_lines("data/outfile_example.txt"), 1,100)[1:10]
 3. Analyse and visualize the model outputs to answer some of the questions targeted through the scenario analysis.
 
 4. Design a shiny web app to be integrated with the [FACTS project](http://crops.extension.iastate.edu/facts/) to be used as a tool to answer particular question in an interactive way.
-
 
 ## Approach
 
@@ -109,10 +99,9 @@ R software was the main tool used in this project
 - Clean
 - Reshape
 - Analyze
-- VIsualize
+- Visualize
 
 Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` were highly used. 
-
 
 ## Project Outputs
 
@@ -124,8 +113,10 @@ Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` were highly
 
   1.3 Rmd scrips for the reproducible analysis and visualization
 
-2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website 
+2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website ???
 
+
+# Workflow
 
 ## Scenarios in APSIM / Data generation
 
@@ -139,7 +130,7 @@ knitr::kable(data_frame(Factor =names(cornKey),
              caption = "Table 1. Factor levels used for the APSIM scenario analysis")
 ```
 
-##Data cleaning and tidying
+## Data cleaning and tidying
 
 The factors used for each simulation are trapped in the file name! 
 ```{r, echo=FALSE}
@@ -157,8 +148,7 @@ To "free" them we used:
 - `tidyr::gather`
 
 
-## Data cleaning and tidying
-### Data diccionary and keynames
+## Data diccionary and keynames
 
 - SoybeanKey and CornKey
 
@@ -171,8 +161,7 @@ head(data.frame(read.csv("data/dataDictionary_variables.csv")),6)
 
 ```
 
-## Data cleaning and tidying
-### Weather
+## Weather
 
 We used the weather data and classified it into 5 categories: `r levels(metYears$climate)`
 
@@ -180,8 +169,7 @@ We used the weather data and classified it into 5 categories: `r levels(metYears
 metYears[sort(sample(1:length(metYears$year),6)), ]
 ```
 
-## Data cleaning and tidying
-### Weather
+## Weather (cont.)
 
 
 ```{r, echo=FALSE, fig.height=4, fig.width=6, message=TRUE, warning=TRUE}
@@ -215,7 +203,9 @@ met %>%
 
 ```
 
-## Data Analysis and Visualization 
+# Data Analysis 
+
+## Visualization 
 
 
 ![](http://38.media.tumblr.com/8b05d0cfa67259203d4e3a7e6f61b0fa/tumblr_mh083hv8N41r00g1wo1_500.gif)
@@ -373,13 +363,12 @@ multiscenario_random <- function(inputs,n=3){
 ```
 
 ## Scenario comparison: Soybean 
-```{r, echo=TRUE, fig.height=7.5, fig.width=7.5}
+```{r, fig.height=7.5, fig.width=7.5, include=FALSE}
 scenarioTable_soy <- multiscenario_random(soybeanKey,5)
 ```
 
 ```{r, echo=FALSE}
-knitr::kable(select(scenarioTable_soy, scenario, site:waterTable),
-             caption = "Table 2. Scenario analysis Soybeans")
+knitr::kable(select(scenarioTable_soy, scenario, site:waterTable))
 ```
 
 
@@ -404,13 +393,12 @@ scenarioTable_soy %>%
 
 ## Scenario comparison: Corn
 
-```{r, echo=TRUE}
+```{r, include=FALSE}
 scenarioTable_corn <- multiscenario_random(cornKey,5)
 ```
 
 ```{r, echo=FALSE}
-knitr::kable(select(scenarioTable_corn, scenario, site:Nrate),
-             caption = "Table 3. Scenario analysis Corn")
+knitr::kable(select(scenarioTable_corn, scenario, site:Nrate))
 ```
 
 ## Scenario comparison: Corn
@@ -538,7 +526,15 @@ server <- function(input, output) {
   output$corn_scenarios <- renderTable(multiscenario_random(cornKey,3))
 }
 
+
 # Run app ############################################################
 
 shinyApp(ui, server)
 ```
+
+
+## Facts website
+
+["http://crops.extension.iastate.edu/facts/"]("http://crops.extension.iastate.edu/facts/")
+
+
