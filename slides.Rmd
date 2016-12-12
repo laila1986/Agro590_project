@@ -1,0 +1,253 @@
+---
+title: "Project AGRON590"
+author: "Laila Puntel and Rafael Martinez-Feria"
+date: "December 12, 2016"
+output: ioslides_presentation
+widescreen: TRUE
+incremental: true
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Background
+
+"The FACTS project"
+
+![](images/site.png)
+
+
+##Background
+
+###Not only the data is what it matters!
+
+
+
+- What is going to be the yield this year?
+
+- How much nitrogen is in the soil today?
+
+- Do I have enough soil water and nitrogen for the next few days? 
+
+
+##Background
+###APSIM plataform
+<div align="center">
+<img src="images/Apsim2.png" width=500 height=350>
+</div>
+
+
+
+##Background
+
+###In-Season We use APSIM’s output to provide real-time **estimates** and **forecasts** for 
+
+- Weather
+
+- Soil water and nitrogen
+
+- Crop water and nitrogen uptake
+
+- Yield predictions
+
+- Crop staging 
+
+
+
+
+##Background
+
+### Hindcast: What if? 
+
+When the season is over ...there is more work to do! Farmers may be asking themselves these kinds of questions:
+
+> What could have I done differently? 
+
+> What if I had used more nitrogen or planted more seeds?
+
+> What if I had gotten more rain?
+
+##Background
+
+APSIM outputs are messy
+
+Image with an example of the .out files
+
+
+
+## Objectives
+
+
+1. Create a database from APSIM outputs in a **"tidy"** format to facilitate analysis.
+
+2. Set up a flexible data process and analysis workflow of APSIM simulation to allow collaboration and reproducibility of our project team it in the long term.
+
+3. Analyse and visualize the model outputs to answer some of the questions targeted through the scenario analysis.
+
+4. Design a shiny web app to be integrated with the [FACTS project](http://crops.extension.iastate.edu/facts/) to be used as a tool to answer particular question in an interactive way.
+
+
+## Approach
+
+R software was the main tool used in this project
+
+- Read
+- Clean
+- Reshape
+- Analyze
+- VIsualize
+
+Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` were highly used. 
+
+
+## Project Outputs
+
+1. A [github repostiory](https://github.com/laila1986/Agro590_project) that contains:
+
+  1.1 All the raw and tidy datasets
+
+  1.2 R scripts for cleaning, tidyng, and munging
+
+  1.3 Rmd scrips for the reproducible analysis and visualization
+
+2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website 
+
+
+## Project Outputs
+
+### Scenarios in APSIM / Data generation
+
+```{r, echo=TRUE}
+corn_report <- readRDS("data/corn_report.rds")
+soybean_report <- readRDS("data/soybean_report.rds")
+
+knitr::kable(data_frame(Factor =names(cornKey),
+                        Corn = cornKey,
+                        Soybean= c(soybeanKey, NA, NA)),
+             caption = "Table 1. Factor levels used for the APSIM scenario analysis")
+```
+
+##Data cleaning and tidying
+
+We used: 
+
+- `tidyr::separate()`
+- `gsub()`
+- `dplyr::group by` and `dply::summarise`
+- `dplyr::join left`
+- `tidyr::gather`
+
+
+```{r, echo=FALSE}
+
+unique(readRDS("data/corn.rds")[,"title"])[1:3]
+
+```
+
+## Data cleaning and tidying
+
+### Data diccionary and keynames
+
+- SoybeanKey and CornKey
+
+- Data diccionary: names of each of the variables (name), a version of the name for visualization (variable), and the units in metric and english system (unitSi and unitEng). 
+
+
+ ``` {r, }
+head(as.data.frame(read_csv("data/dataDictionary_variables.csv")))
+
+```
+
+
+## Data cleaning and tidying
+
+### Weather
+
+```{r, echo=FALSE}
+
+head(metYears)
+
+```
+
+```{r, fig.height=4, fig.width=6, message=TRUE, warning=TRUE}
+
+met <- read_table("data/Ames.met",skip = 12,col_names = F)
+
+names <- read_lines("data/Ames.met")[11]
+names(met) <- unlist(strsplit(names," "))[unlist(strsplit(names," ")) != ""]
+
+met %>%
+  mutate(date = as.Date(day - 1, origin = paste0(year,"-01-01")),
+         month = month(date),
+         temp = (maxt + mint)*0.5,
+         season = ifelse(month %in% 4:10,"growing","winter")) %>%
+  filter(year < 2016) %>%
+  group_by(year, season) %>%
+  summarise(temp = mean(temp),
+            rain = sum(rain)) %>% 
+  filter(season == "growing") %>%
+  select(year,temp,rain) %>%
+  left_join(metYears) %>%
+  ggplot(aes(temp,rain)) +
+  geom_hline(aes(yintercept=median(rain)),linetype = "dotted") +
+  geom_vline(aes(xintercept=median(temp)),linetype = "dotted") +
+  geom_text(aes(label=substr(year,3,4), colour=climate)) +
+  labs(y ="Seasonal precipitation (mm)",
+       x = "Seasonal average temperature (oC)",
+       colour = "Classification") +
+  theme_base()
+
+
+```
+
+
+## Scenario comparison
+
+### Multi Scenario function
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+
+scenario_generator <- function(inputs){  
+  x <- c()
+  for(i in 1:length(inputs)) {
+    idx <- sample(1:length(inputs[[i]]), 1)
+    x <- c(x,as.character(inputs[[i]][idx]))
+    
+  }
+  x <- data.frame(matrix(x,byrow =T,ncol = length(inputs)))
+  names(x) <- names(inputs)  
+  return(x)
+}
+
+multiscenario_random <- function(inputs,n=3){
+  
+  if(n > 10) stop("Oooops... Too many scenarios!")
+  
+  scenarios <-  data.frame()
+  
+  for(i in 1:n){
+    x <- scenario_generator(inputs)
+    x$scenario <- paste0(LETTERS[i])
+    scenarios <- rbind(scenarios,x)
+  }
+  return(scenarios)
+}
+
+```
+
+## Visualization 
+
+
+![](http://38.media.tumblr.com/8b05d0cfa67259203d4e3a7e6f61b0fa/tumblr_mh083hv8N41r00g1wo1_500.gif)
+
+
+
+
+
+##Visualization
+
+Add two graphs here as an example 
+
