@@ -199,6 +199,7 @@ In this dictionary we aimed to have the exact names of each of the variables (na
 
 The graps bellow are an overview of some of the main vairables simulated in each of the scenarios and few examples of interesting questions that can be answerd using our data set. One of our final objetives of this work in to create a shiny webapp to be included in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website. 
 
+
 ### How does the corn yield response to nitrogen change according to the class of year and time of N application? Average maturity group and planting date were selected. 
 
 ```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
@@ -223,6 +224,9 @@ data$corn %>%
 
 ```
 
+In the figure above we have yield in bushels per acre as a funtion of how much nitrogen fertilzer was applied in the soil for two sites and two fertilizer sources. The function "~ facet_wrap" allow us to visualize each of these responses at a different type of climate. Overall, yields, response to nitrogen, and the amount of nitrogen than maximize the yield varies according to the weather and in some cases there is a clear effect of nitrogen source within locations. These kind of graphics and analysis could be used as a tool to support nitrogen management decisions and also as a learning tool. 
+
+
 ### How does the nitrogen uptake change based on the planting date and the maturity of the crop for Ames and Cobs? Does the water table play a role in this relationships? 
 
 ```{r, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
@@ -243,6 +247,12 @@ data$corn %>%
 
 
 ```
+
+
+Previous figure shows how the amount of nitrogen taken by a corn crop (N uptake) response to the addition fertilizer for long, normal, and short maturity groups. Using within the "aes" statement of ggplot2 "color = planting" we are able to visualize the relationship between nitrogen uptake and nitrogen rate for each planting date within each maturity group. 
+
+In the following we how does the nitrogen uptake in soybeans change as function of planting date (doy= day of the year) for long, normal, and short maturity groups. 
+
 
 ```{r, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
 
@@ -265,6 +275,8 @@ data$soybean %>%
 ```
 
 ### What are the main factor explaining the variance of each of the variables masured in each of the simulations ?
+
+Based on individual linear regressions between each of the variables simulated by APSIM (e.g.Total_N_loss) and the factors manipulated for the scenarios analysis (e.g nitrogen rate) we were able to explain the variance of the APSIM variables. We perfomed the anysis on both crops and they are displayed as bar graphs below. Besides the research questionS and conclusions that you may beable to answer based on this analysis, it is a good method to verify if the simulated variables are behaving in the correct way.
 
 ```{r, echo=FALSE, message=FALSE, warning=TRUE}
 
@@ -399,6 +411,8 @@ cornKey <- list(
 for(i in 1:length(cornKey)) { cornKey[[i]] <- as.character(cornKey[[i]]) }
 ```
 
+
+Next bar graphs show a complete display of the simulated variables from APSIM for each of selected scenarios using the random fuction for corn and soybeans. The bars graphs are the means of each of the variables accross all simulated years and their standard deviation. Once again this kind of display is an useful way to check if the data has been simulated correctly for each of the scenarios and if the responses of the variables have logical sense. Also, this visualizations facilitates the comparison between scenarios. 
 
 ### Comparison of selected scenarios for Soybean 
 
