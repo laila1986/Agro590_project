@@ -26,7 +26,7 @@ source("code/extract_keys.R")
 ## Background
 
 ### Forecast and Assessment of Cropping sysTemS ([FACTS](http://crops.extension.iastate.edu/facts/) ): "The FACTS project"
-The field season of 2016 saw the [Integrated Cropping systems Lab](http://www.archontoulislab.com/) spent much of its time, money and energy collecting a high-resolution, in-season dataset with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa .
+The field season of 2016 saw the [Integrated Cropping systems Lab](http://www.archontoulislab.com/) spent much of its time, money and energy collecting a high-resolution, in-season data set with many soil and crop measurements from 20 site-crop-management replicated treatments across Iowa .
 
 ![](images/site.png)
 
@@ -40,7 +40,7 @@ This data by-itself is valuable, as such high resolution in-season data is rare.
 
 To answer those questions, we used the [Agricultural Production System sIMulator (APSIM)](www.apsim.info), a mechanistic cropping systems model widely used in the U.S. and around the world for research and commercial applications in agriculture. We ran the model with historical, short-term (3 days; using the [NDFD model](http://www.nws.noaa.gov/ndfd) ) and long-term (>90 days; using the [CFS model](https://en.wikipedia.org/wiki/Climate_Forecast_System) ) weather forecasts. Then we use APSIM’s output to provide real-time estimates and forecasts for weather, soil water and nitrogen, crop water and nitrogen uptake, yield predictions, crop staging and heat/frost stresses.
 
-The in-season workflow worked something like this: 1) We seted up model calibration for all experimental sites at the beginning of the season; 2) We then added historical, current, and forecasted weather to drive the model to simulate historical, current, and future field events; 3) We collect ground-truth data (pretty much everything we could) to test our model; and 5) finally, we published the results (simulated and measured data) on our website every 2 weeks. The graph below is one example of the Soil Water content simulated by APSIM and in-season data collected at the NW site in Iowa.
+The in-season workflow worked something like this: 1) We set up model calibration for all experimental sites at the beginning of the season; 2) We then added historical, current, and forecasted weather to drive the model to simulate historical, current, and future field events; 3) We collect ground-truth data (pretty much everything we could) to test our model; and 5) finally, we published the results (simulated and measured data) on our website every 2 weeks. The graph below is one example of the soil water content simulated by APSIM and in-season data collected at the NW site in Iowa.
 
 ![](images/data.png)
 
@@ -54,18 +54,15 @@ Now that the field season has come to an end, farmers may be asking themselves t
 
 > What if I had gotten more rain?
 
-This is when the model comes in handy. We can basically use the calibrated model to perform a scenario (‘what if’) analysis by making changes in APSIM. For instance, we could change the amount of fertilizer we applied, or the number of seeds planted, or plant our crops in narrower rows, or even add precipitation events. The idea is to evaluate what would have led to a greater yield, less environmental damage, and more profits. This type of analysis also give us the opportunity to evaluate how current management practices and environment performance of cropping systems. 
+This is when the model comes in handy. We can basically use the calibrated model to perform a scenario ('what if') analysis by making changes in APSIM. For instance, we could change the amount of fertilizer we applied, or the number of seeds planted, or plant our crops in narrower rows, or even add precipitation events. The idea is to evaluate what would have led to a greater yield, less environmental damage, and more profits. This type of analysis also gives us the opportunity to evaluate how current management practices and environment performance of cropping systems. 
 
-**One challenge** is that the APSIM output data is messy. Data is reported for each system in an individual text file. Values are reported for every single day, but sometimes we are interested in end of season values, or averages, etc. Values are sometimes stored as variable names (e.g. sw15, sw45, for volumetric soil water content at 15 and 45 cm respectively). This whole picture could get even more messy when trying to simulate scenario analysis that essentially multiply the number of outputs (txt files) by many combinations of management, weather, etc. that we might have. In short, a lot of data processing and tiding is needed before any meaningful information can be drawn from these data. 
+**One challenge** is that the APSIM output data is messy. Data is reported for each system in an individual text file. Values are reported for every single day, but sometimes we are interested in end of season values, or averages, etc. Values are sometimes stored as variable names (e.g. sw15, sw45, for volumetric soil water content at 15 and 45 cm respectively). This whole picture could get even more messy when trying to simulate scenario analysis that essentially multiply the number of outputs (txt files) by many combinations of management, weather, etc. that we might have. In short, a lot of data processing and tidying is needed before any meaningful information can be drawn from these data. 
 
-**A greater challenge**, however, will be the data flows between collaborators of the research. Dr. Archontoulis (PI of this project), will be in charge of running the simulations for the scenario analysis. It is to be expected that the structure of the data (the outputs requested from APSIM) may change after the team looks.
-There is a need of designing a flexible and robust workflow environment where data could still being used even when variables-outputs seem to not have the same name anymore. 
+**A greater challenge**, however, will be the data flows between collaborators of the research. Dr. Archontoulis (PI of this project), will be in charge of running the simulations for the scenario analysis. It is to be expected that the structure of the data (the outputs requested from APSIM) may change after the team initates the work with the dataset. Thus, there is a need of designing a flexible and robust workflow environment where data could still being used even when variables-outputs seem to not have the same name anymore. 
 
-## Objective
+## Objectives
 
-What will “success” look like for your project?
-You may need more than one.
-Potentially consider objectives for this class, as well as long term (if necessary)
+The objectives of this projects are: 
 
 1. Create a database from APSIM outputs in a "tidy" format to facilitate analysis.
 
@@ -77,34 +74,9 @@ Potentially consider objectives for this class, as well as long term (if necessa
 
 ## Approach
 
-R software will be the main tool to read, clean, reshape, analyze, and visualize the data coming from APSIM simulations. Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` will be highly used. 
+R software was be the main tool to read, clean, reshape, analyze, and visualize the data coming from APSIM simulations. Particular packages such as `dplyr`, `tidyr`, `ggplot2`, and `shiny` were highly used. 
 
-## Desired outcome:
-A  tidy database that includes all output variables from APSIM simulations and a reproducible analysis in form of an interactive shiny web app to visualize data outcomes. 
-
-
-## Main project deliverables
-
-1. A [github repostiory](https://github.com/laila1986/Agro590_project) that contains:
-
-  1.1 All the raw and tidy datasets
-
-  1.2 R scripts for cleaning, tidyng, and munging
-
-  1.3 Rmd scrips for the reproducible analysis and visualization
-
-2. A shiny webapp for inclusion in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website 
-
-
-
-#Outcomes
-
-## APSIM data generator
-
-```{r, eval=FALSE, include=FALSE}
-file.info("data/rawData.zip")
-
-```
+### APSIM data generator
 
 ```{r, echo=FALSE, message=TRUE, warning=FALSE}
 corn_report <- readRDS("data/corn_report.rds")
@@ -116,27 +88,27 @@ knitr::kable(data_frame(Factor =names(cornKey),
              caption = "Table 1. Factor levels used for the APSIM scenario analysis")
 ```
 
-Simulations were conducted using a factorial arragements of the factors shown in Table 1, which produced `r length(corn_report$title)` and `r length(soybean_report$title)` individual factor combinations for corn and soybean, respectively, and for each of these, `r length(unique(metYears$year))` weather years (`r paste(min(metYears$year),max(metYears$year),sep="-")`) were simulated. Some of the simulations contained errors, that is, APSIM crashed and not all years were simulated, but this were a relative small number of simulations: `r length(corn_report$no_years[corn_report$no_years < 36])` (`r paste0( round(length(corn_report$no_years[corn_report$no_years < 36])/length(corn_report$no_years)*100,1),"%")`) of all corn simulations, and `r length(soybean_report$no_years[soybean_report$no_years < 36])` (`r paste0(round(length(soybean_report$no_years[soybean_report$no_years < 36])/length(soybean_report$no_years)*100,1),"%")`) of all soybean simulations. A copy a of all output files from each of the runs in APSIM was storage in the repo in the "rawdata" folder. 
+APSIM simulations were conducted using a factorial arrangements of the factors shown in Table 1, which produced `r length(corn_report$title)` and `r length(soybean_report$title)` individual factor combinations for corn and soybean, respectively, and for each of these, `r length(unique(metYears$year))` weather years (`r paste(min(metYears$year),max(metYears$year),sep="-")`) were simulated. Some of the simulations contained errors, that is, APSIM crashed and not all years (36 weather years) were simulated, but this were a relative small number of simulations: `r length(corn_report$no_years[corn_report$no_years < 36])` (`r paste0( round(length(corn_report$no_years[corn_report$no_years < 36])/length(corn_report$no_years)*100,1),"%")`) of all corn simulations, and `r length(soybean_report$no_years[soybean_report$no_years < 36])` (`r paste0(round(length(soybean_report$no_years[soybean_report$no_years < 36])/length(soybean_report$no_years)*100,1),"%")`) of all soybean simulations. A copy a of all output files from each of the runs in APSIM was stored in the repo in the "rawdata" folder. 
 
-Once we had the raw data sets we used the scripts for extracting and compiling corn and soybean data from APSIM which are the ".out" files (`r list.files("code/")[2:3]`). In those scripts we unzipped the data `utils::TTunzip`, we looped through each of the files to save all the data and also to add the information on the name of the files. The names of the files contain the description of the factors used in each of the simulations. Finaly, we used `base::saveRDS` to save the objects created within the loop in R into a ".rds" object. This allows us to access to the data later on just by reading those objects with the fuction `base:: readRDS`. 
+Once we had the raw data sets we used the scripts for extracting and compiling corn and soybean data from APSIM which are the ".out" files (`r list.files("code/")[2:3]`). In those scripts we unzipped the data `utils::TTunzip`, we looped through each of the files to save all the data and also to add the information on the name of the files. The names of the files contain the description of the factors used in each of the simulations. Finally, we used `base::saveRDS` to save the objects created within the loop in R into a ".rds" object. This allowed us to access the data later on just by reading those objects with the function `base::readRDS`. 
 
-## Data cleaning and tidying
+### Data cleaning and tidying
 
-One of the most important things we learnt in class was how make the data "tidy" and the importance of it. Get your data "tidy" means cleaning and structuring the data to facilitate analysis (Hadley Wickham). Part of our initial cleaning involved working with the names of each of the files coming from APSIM. The name of the files containes all the information related to the factors used to simulate the data and we wanted to keep this information as treatment factors in our data set. An example of the names of the files is listed below:
+One of the most important things we learnt in class was how make to the data "tidy" and the importance of it. Getting your data "tidy" means cleaning and structuring the data to facilitate analysis (per Hadley Wickham). Part of our initial cleaning involved working with the names of each of the files coming from APSIM. The name of the files contains all the information related to the factors used to simulate the data and we wanted to keep this information as treatment factors in our data set. Examples of the names of the files are listed below:
 
 ```{r, echo=FALSE}
 unique(readRDS("data/corn.rds")[,"title"])[1:3]
 ```
 
 We used `tidyr::separate()` function to extract the names of the factors using the ";" as separator and `gsub()` to clean the string from unwanted characters. 
-The `dply::mutate()` fuction allowed us to add new variables while preserving the existing variables in the data set. 
-Using the `dplyr::group by` and the `dply::summarise` fuction we were able to get statistics (mean and standard deviation) for a group of selected variables. 
+The `dplyr::mutate()` function allowed us to add new variables while preserving the existing variables in the data set. 
+Using the `dplyr::group_by` and the `dplyr::summarise` functions we were able to get statistics (mean and standard deviation) for a group of selected variables. 
 We classified into "average", "warm and dry", "warm and wet", "cool and dry", and "cool and wet" the weather data used to run the APSIM model and we joined that description with the "soy" or "corn" data, respectively (`dplyr::join left`). 
-At the final steps of the data transformation we have several variable () that were names in the columns of the data set, we used `tidyr::gather` to gather the selected columns into key-value pairs of "variable" and "value" make a selection of column names variables that were showing as a name in a column  of the a selection of variables. 
+At the final steps of the data transformation we have several variables that were names in the columns of the data set, we used `tidyr::gather` to gather the selected columns into key-value pairs of "variable" and "value" make a selection of column names variables that were showing as a name in a column  of the a selection of variables. 
 
 ### Weather classification
 
-As metioned above we wanted to keep the classification of the weather as part of our data set. Over the 35 years used to run the simulations there are between 7-8 years representing each of categories.
+As mentioned above, we wanted to keep the classification of the weather as part of our data set. Over the 35 years used to run the simulations there are between 7-8 years representing each of the categories.
 
 
 ```{r, echo=FALSE}
@@ -145,7 +117,7 @@ head(metYears)
 
 ```
 
-```{r, fig.height=4, fig.width=6, message=TRUE, warning=TRUE}
+```{r, echo=FALSE, fig.height=4, fig.width=6, message=TRUE, warning=TRUE}
 
 met <- read.table("data/Ames.met",skip = 12,header = F)
 
@@ -176,33 +148,31 @@ met %>%
 
 ```
 
-## Workflow and Reproducibility
+### Workflow and Reproducibility
 
-One of our maian goals of this project is to have everything well documented in order to make it as much as **reporducible** as possible. We hope this work is the starting point for our Lab group to make future collabaorations and to expand the data set already created here. At this point we believe we made: 
+One of our main goals of this project is to have everything well documented in order to make it as much as **reporducible** as possible. We hope this work is the starting point for our Lab group to make future collaborations and to expand the data set already created here. In this front, we have made: 
 
 - Scripts for each of our main steps describing the job to built the data base and a summary of the scenarios for each of the crops
 - An organized repo where data and scripts are classify in different folders 
 - Relative paths that refer only to the project directory and not to the specific computer
 - Script on the scripts to keep an order of the steps you need to take in this project
 
+In addition to the main steps to build a **reproducible** project, we created a separate file that explains what everything is (**Data Dictionary**): 
 
-Complementary to the main steps to build a **reproducible** project we created a separate file that explains what everything is (**Data Diccionary**): 
-
-``` {r, }
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 head(as.data.frame(read_csv("data/dataDictionary_variables.csv")))
 
 ```
 
-In this dictionary we aimed to have the exact names of each of the variables (name), a version of the name for visualization (variable), and the units in metric and english system (unitSi and unitEng). 
+In this dictionary we aimed to have the exact names of each of the variables (name), a version of the name for visualization (variable), and the units in metric and English system (unitSi and unitEng). 
 
 ## Visualization Examples
 
-The graps bellow are an overview of some of the main vairables simulated in each of the scenarios and few examples of interesting questions that can be answerd using our data set. One of our final objetives of this work in to create a shiny webapp to be included in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website. 
+The graphs below are an overview of some of the main variables simulated in each of the scenarios and few examples of interesting questions that can be answered using our data set. One of our final objectives of this work integrate a number of the vizualization schemes here explored into the shiny web app to be included in the [FACTS hindcast](http://crops.extension.iastate.edu/facts/end-season-evaluation) website. Here we show a limited number of examples of vizualization schemes that we explored. 
 
+> How does the corn yield response to nitrogen change according to the class of year and time of N application? Average maturity group and planting date were selected. 
 
-### How does the corn yield response to nitrogen change according to the class of year and time of N application? Average maturity group and planting date were selected. 
-
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 data$corn %>%
   inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
@@ -224,12 +194,12 @@ data$corn %>%
 
 ```
 
-In the figure above we have yield in bushels per acre as a funtion of how much nitrogen fertilzer was applied in the soil for two sites and two fertilizer sources. The function "~ facet_wrap" allow us to visualize each of these responses at a different type of climate. Overall, yields, response to nitrogen, and the amount of nitrogen than maximize the yield varies according to the weather and in some cases there is a clear effect of nitrogen source within locations. These kind of graphics and analysis could be used as a tool to support nitrogen management decisions and also as a learning tool. 
+In the figure above we have yield in bushels per acre as a function of how much nitrogen fertilizer was applied in the soil for two sites and two fertilizer sources. The function `facet_wrap()` allow us to visualize each of these responses at a different type of climate. Overall, yields, response to nitrogen, and the amount of nitrogen than maximize the yield varies according to the weather and in some cases there is a clear effect of nitrogen source within locations. These kind of graphics and analysis could be used as a tool to support nitrogen management decisions and also as a learning tool. 
 
 
-### How does the nitrogen uptake change based on the planting date and the maturity of the crop for Ames and Cobs? Does the water table play a role in this relationships? 
+> How does the nitrogen uptake change based on the planting date and the maturity of the crop for Ames and Cobs? Does the water table play a role in this relationship? 
 
-```{r, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 data$corn %>% 
   filter (waterTable == "1200", variable == "CropNupt") %>%
@@ -249,12 +219,12 @@ data$corn %>%
 ```
 
 
-Previous figure shows how the amount of nitrogen taken by a corn crop (N uptake) response to the addition fertilizer for long, normal, and short maturity groups. Using within the "aes" statement of ggplot2 "color = planting" we are able to visualize the relationship between nitrogen uptake and nitrogen rate for each planting date within each maturity group. 
+Previous figure shows how the amount of nitrogen taken by a corn crop (N uptake) response to the addition fertilizer for the long, normal, and short maturity groups. Using within the `aes()` statement of ggplot2 `color = planting` we are able to visualize the relationship between nitrogen uptake and nitrogen rate for each planting date within each maturity group. 
 
-In the following we how does the nitrogen uptake in soybeans change as function of planting date (doy= day of the year) for long, normal, and short maturity groups. 
+In the following we explore how does the nitrogen uptake in soybeans change as function of planting date (doy= day of the year) for the long, normal, and short maturity groups. 
 
 
-```{r, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, fig.height=5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 data$soybean %>% 
   inner_join(read_csv("data/dataDictionary_variables.csv") %>% filter(userSelect == 1)) %>%
@@ -274,11 +244,11 @@ data$soybean %>%
 
 ```
 
-### What are the main factor explaining the variance of each of the variables masured in each of the simulations ?
+> What are the main factors explaining the variance of each of the variables measured in each of the simulations?
 
-Based on individual linear regressions between each of the variables simulated by APSIM (e.g.Total_N_loss) and the factors manipulated for the scenarios analysis (e.g nitrogen rate) we were able to explain the variance of the APSIM variables. We perfomed the anysis on both crops and they are displayed as bar graphs below. Besides the research questionS and conclusions that you may beable to answer based on this analysis, it is a good method to verify if the simulated variables are behaving in the correct way.
+Based on individual linear regressions between each of the variables simulated by APSIM (e.g.Total_N_loss) and the factors manipulated for the scenario analysis (e.g nitrogen rate) we were able to explain the variance of the APSIM variables. We performed the analysis on both crops and they are displayed as bar graphs below. Besides the research questions and conclusions that you may able to answer based on this analysis, it is a good method to verify that the simulated variables are behaving in the way expected.
 
-```{r, echo=FALSE, message=FALSE, warning=TRUE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 data$corn %>%
   inner_join(read.csv("data/dataDictionary_variables.csv") %>% select(variable,userSelect,name),by="variable") %>%
@@ -309,7 +279,7 @@ ggplot(data=cornVars, aes(y,percentVar,fill=factor)) +
 
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=TRUE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 data$soybean %>%
   inner_join(read.csv("data/dataDictionary_variables.csv") %>% select(variable,userSelect,name),by="variable") %>%
@@ -340,13 +310,13 @@ ggplot(data=soyVars, aes(y,percentVar,fill=factor)) +
 
 ```
 
-## Scenario Comparison
+## Scenario Comparisons
 
-In order to show a selection of levels within each of the factors used for the simulations we created a fuction **Multi Scenario Funtion** in which the levels of each of the factors is selected randomly. For example Table 2 and 3 shows the randomly selected factor for soybean and corn, respectively.
+In order to show a selection of levels within each of the factors used for the simulations we created a function **Multi Scenario** in which the levels of each of the factors are selected randomly. For example Table 2 and 3 shows the randomly-selected factors for soybean and corn, respectively.
 
 ### Multi Scenario function
 
-```{r, echo=TRUE, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 
 scenario_generator <- function(inputs){  
   x <- c()
@@ -376,10 +346,9 @@ multiscenario_random <- function(inputs,n=3){
 
 ```
 
-To generate a selection of the scenarios we used as an input of the function the **soybeanKey** and the **cornKey** created with the scripts listed below. For each of the crops we extracted the levels of each of the factors using the fuction `base::unique`.
+To generate a selection of the scenarios we used as an input of the function the **soybeanKey** and the **cornKey** created with the scripts listed below. For each of the crops we extracted the levels of each of the factors using the function `base::unique`.
 
-
-```{r, echo=TRUE, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 
 # Inputs ############################################################
 
@@ -411,12 +380,11 @@ cornKey <- list(
 for(i in 1:length(cornKey)) { cornKey[[i]] <- as.character(cornKey[[i]]) }
 ```
 
-
-Next bar graphs show a complete display of the simulated variables from APSIM for each of selected scenarios using the random fuction for corn and soybeans. The bars graphs are the means of each of the variables accross all simulated years and their standard deviation. Once again this kind of display is an useful way to check if the data has been simulated correctly for each of the scenarios and if the responses of the variables have logical sense. Also, this visualizations facilitates the comparison between scenarios. 
+The following bar graphs show a complete display of the simulated variables from APSIM for each of selected scenarios using the random function for corn and soybeans. The bars in the graphs are the means of each of the variables across all simulated years and their standard deviation. Once again this kind of display is a useful way to check if the data has been simulated correctly for each of the scenarios and if the responses of the variables have logical sense. Also, this visualization scheme facilitates the comparison between scenarios. 
 
 ### Comparison of selected scenarios for Soybean 
 
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 scenarioTable_soy <- multiscenario_random(soybeanKey,4)
 
@@ -441,7 +409,7 @@ scenarioTable_soy %>%
 
 ### Comparison of selected scnearions for corn
 
-```{r, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, fig.height=7.5, fig.width=7.5, message=FALSE, warning=FALSE}
 
 scenarioTable_corn <- multiscenario_random(cornKey,4)
 knitr::kable(select(scenarioTable_corn, scenario, site:Nrate),
@@ -465,14 +433,16 @@ scenarioTable_corn %>%
 ```
 
   
-## Next steps
+## Next step: Decision support tool development
+ 
+The next step of the project is to use this data set and the explored visualization schemes to create a user-interactive platform, which will be the base for the development of the decision support tool. Unfortunately, we were not able to complete this outcome in the timeline proposed. However, we were able to layout a vision for how the platform will work and how it will look like, which we describe below. 
 
-### Shiny app development
+One of the important aspects of the tool is to provide the user with flexibility, giving them the ability to define the parameters for creating the scenario comparisons of interest. Then the user would receive feedback from the system, in the form of a report which characterizes the performance of the scenarios created, using variables selected by the user. To do this, we will make use of Rstudio’s [shiny package](https://shiny.rstudio.com/). To create the interface, we will specifically use the [shinydashboard framework](https://rstudio.github.io/shinydashboard/) which contains many templates and useful functions to allow for easier development. 
 
-### More sites 
+![](images/shinydashboard_layout.png)
 
+The general layout  of the tool (see figure above for a rough draft) will have two tabs that can be selected from the sidebar menu. Each tab will be dedicated to the scenario analysis of each crop (corn and soybean). Each tab will contain four boxes. The main box will be the "scenario builder" which will contain the fields, radio boxes, etc. to a create the scenarios. The selected inputs will be saved (on click to a submit button) into a data.frame object. This will be shown in a table form for reference. Then this data will be used to subset the main scenario data set using the `dplyr::left_join` function, and the resulting data will be used to create a plot of the resulting scenarios. Finally, we will include a box that will contain check-box selections for the variables that the user desires to see. Current progress in the development of the tool can be seen in the `app.R` file included in the repository. 
 
+## Final summary and outcomes
 
-  
-  
-  
+In this project we created a data set for corn and soybean cropping systems in Iowa using APSIM. This data set included simulations from 36 weather years with factorial combinations of management, environment and genetic factors. The data generated by APSIM then was compiled and put into a "tidy" format to facilitate analysis. Then we created a flexible data process and analysis workflow of APSIM simulation outputs to allow collaboration and reproducibility of our project. We analyzed and visualize the model outputs to answer some of the questions targeted through the scenario analysis. Unfortunately, we were not able to integrate the analysis here presented into a shiny web app in the timeline proposed. However, we defined the layout and general framework to construct such tool. We plan to continue working to integrate this analysis to the [FACTS project website](http://crops.extension.iastate.edu/facts/) to be used as a tool to answer particular questions in an interactive way.
